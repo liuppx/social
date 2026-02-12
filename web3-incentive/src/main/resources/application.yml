@@ -1,0 +1,10 @@
+server:
+  port: 8903
+spring:
+  profiles:
+    active: dev
+  application:
+    name: yeying-social-web3-incentive
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher

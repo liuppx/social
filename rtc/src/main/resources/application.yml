@@ -1,0 +1,28 @@
+server:
+  port: 8890
+spring:
+  profiles:
+    active: dev
+  application:
+    name: yeying-social-rtc
+  flyway:
+    enabled: false
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+
+mybatis-plus:
+  global-config:
+    db-config:
+      id-type: AUTO
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+jwt:
+  accessToken:
+    expireIn: 1800
+    secret: MIIBIjANBgkq
+  refreshToken:
+    expireIn: 604800
+    secret: IKDiqVmn0VFU

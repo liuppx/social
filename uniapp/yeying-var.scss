@@ -1,0 +1,64 @@
+// 颜色
+$yeying-color-primary: #3e45d7;
+$yeying-color-primary-light-1: mix(#fff, $yeying-color-primary, 10%);
+$yeying-color-primary-light-2: mix(#fff, $yeying-color-primary, 20%);
+$yeying-color-primary-light-3: mix(#fff, $yeying-color-primary, 30%);
+$yeying-color-primary-light-4: mix(#fff, $yeying-color-primary, 40%);
+$yeying-color-primary-light-5: mix(#fff, $yeying-color-primary, 50%);
+$yeying-color-primary-light-6: mix(#fff, $yeying-color-primary, 60%);
+$yeying-color-primary-light-7: mix(#fff, $yeying-color-primary, 70%);
+$yeying-color-primary-light-8: mix(#fff, $yeying-color-primary, 80%);
+$yeying-color-primary-light-9: mix(#fff, $yeying-color-primary, 90%);
+$yeying-color-primary-dark-1: mix(#000, $yeying-color-primary, 10%);
+$yeying-color-primary-dark-2: mix(#000, $yeying-color-primary, 20%);
+$yeying-color-primary-dark-3: mix(#000, $yeying-color-primary, 30%);
+$yeying-color-primary-dark-4: mix(#000, $yeying-color-primary, 40%);
+
+$yeying-color-success: #18bc37;
+$yeying-color-warning: #f3a73f;
+$yeying-color-danger: #e43d33;
+$yeying-color-info: #8f939c;
+
+// 文字颜色
+$yeying-text-color: #000000;
+$yeying-text-color-light: #6a6a6a;  
+$yeying-text-color-lighter: #909399; 
+$yeying-text-color-lighter-extra: #c7c7c7;
+
+// 边框颜色
+$yeying-border: #F0F0F0;
+$yeying-border-light: #EDEDED;
+$yeying-border-lighter: #DCDCDC;
+$yeying-border-lighter-extra: #B9B9B9;
+
+// 文字大小
+$yeying-font-size: 30rpx;
+$yeying-font-size-small: 28rpx;
+$yeying-font-size-smaller: 26rpx;
+$yeying-font-size-smaller-extra: 24rpx;
+$yeying-font-size-large: 32rpx;
+$yeying-font-size-larger: 34rpx;
+$yeying-font-size-larger-extra: 36rpx;
+
+// 阴影
+$yeying-box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04);
+$yeying-box-shadow-light:  0 2px 12px 0 rgba(0, 0, 0, 0.1);
+$yeying-box-shadow-lighter: 0px 0px 6px rgba(0, 0, 0, .12);
+$yeying-box-shadow-dark: 0px 1px 10px 2px rgba($color: #a5a4a4, $alpha: 0.5);
+
+// 背景
+$yeying-bg: #f8f9ff;
+$yeying-bg-linear: linear-gradient(135deg, #f8f9ff 0%, #ffffff 100%);
+$yeying-bg-active: #f7f8fc;
+$yeying-bg-active-dark: $yeying-color-primary-light-9;
+$yeying-bg-input: #fafafa;
+
+
+// 标题
+$yeying-title-size: 26px; 
+$yeying-title-size-1: 22px; 
+$yeying-title-size-2: 18px;
+
+$font-family: Helvetica Neue, Helvetica, PingFang SC, Hiragino Sans GB, Microsoft YaHei, SimSun, sans-serif;
+
+$yeying-nav-bar-height: 50px;

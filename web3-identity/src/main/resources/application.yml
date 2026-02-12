@@ -1,0 +1,41 @@
+server:
+  port: 8901
+spring:
+  profiles:
+    active: dev
+  application:
+    name: yeying-social-web3-identity
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+  flyway:
+    enabled: false
+
+mybatis-plus:
+  global-config:
+    db-config:
+      id-type: AUTO
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+jwt:
+  accessToken:
+    expireIn: 1800
+    secret: MIIBIjANBgkq
+  refreshToken:
+    expireIn: 604800
+    secret: IKDiqVmn0VFU
+
+web3:
+  auth:
+    nonceExpireIn: 300
+    autoRegister: true
+    defaultChainId: 1
+    expectedDomain: social.yeying.pub
+  did:
+    enabled: false
+  ucan:
+    audience: did:web:social.yeying.pub
+    resource: profile
+    action: read

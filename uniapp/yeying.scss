@@ -1,0 +1,258 @@
+/** 原生button样式 **/
+uni-button {
+	font-size: $yeying-font-size !important;
+	border-radius: 40rpx !important;
+}
+uni-button[type='primary'] {
+	color: #fff !important;
+	background: $yeying-color-primary !important;
+}
+
+uni-button[type='primary'][plain] {
+	color: $yeying-color-primary !important;
+	border: 1px solid $yeying-color-primary;
+	background-color: transparent;
+}
+
+uni-button[type='warn'] {
+	color: #fff !important;
+	background: $yeying-color-danger !important;
+}
+
+uni-button[type='warn'][plain] {
+	color: $yeying-color-danger !important;
+	border: 1px solid $yeying-color-danger !important;
+	background: transparent !important;
+}
+
+uni-button[size='mini'] {
+	font-size: $yeying-font-size-smaller !important;
+}
+
+// #ifdef MP-WEIXIN
+// wx小程序只有button,没有uni-botton
+button {
+	font-size: $yeying-font-size !important;
+}
+
+button[type='primary'] {
+	color: #fff !important;
+	background: $yeying-color-primary !important;
+}
+
+button[type='primary'][plain] {
+	color: $yeying-color-primary !important;
+	border: 2px solid $yeying-color-primary;
+	background: transparent;
+}
+
+button[type='warn'] {
+	color: #fff !important;
+	background: $yeying-color-danger !important;
+}
+
+button[type='warn'][plain] {
+	color: $yeying-color-danger !important;
+	border: 1px solid $yeying-color-danger !important;
+	background: transparent !important;
+}
+
+button[size='mini'] {
+	font-size: $yeying-font-size-smaller !important;
+}
+// #endif
+
+.button-hover[type='primary'] {
+	color: #fff !important;
+	background-color: $yeying-color-primary-dark-1 !important;
+}
+
+/** uni-ui input激活后边框、图标颜色 **/
+.uni-easyinput__content.is-focused:not(.is-input-error-border) {
+	border-color: $yeying-color-primary-light-2 !important;
+	
+	.content-clear-icon {
+		color: $yeying-color-primary-light-2 !important;	
+	}
+}
+
+/** 底部导航 **/
+.uni-tabbar-bottom .uni-tabbar {
+	box-shadow: $yeying-box-shadow;
+}
+
+.uni-tabbar-border {
+	display: none;
+}
+
+.segmented-control {
+	border-color: $yeying-color-primary !important;
+
+	.segmented-control__item--button {
+		border-color: $yeying-color-primary !important;
+	}
+	.segmented-control__item--button--active {
+		background-color: $yeying-color-primary !important;
+
+		.segmented-control__text{
+			color: #fff !important;
+		}
+	}
+	.segmented-control__text{
+		color: $yeying-color-primary !important;
+	}
+}
+
+.uni-radio-input svg{
+	border-color: white !important;
+	background-color: $yeying-color-primary !important;
+}
+
+.uni-radio-input svg {
+	background-color:  $yeying-color-primary !important;
+	border-color: $yeying-color-primary !important;
+	background-clip: content-box !important;
+	box-sizing: border-box;
+	border-radius: 50%;
+	transform: translate(-50%, -50%) scale(0.7)!important; 
+}
+
+.uni-radio-input svg path{
+	fill: $yeying-color-primary !important;
+}
+
+.uni-radio-input {
+	background-color: white !important;
+	border-color: $yeying-color-primary !important;
+}	
+
+.uni-radio-input-disabled {
+	background-color: rgb(225, 225, 225) !important;
+	border-color: rgb(209, 209, 209) !important;
+	opacity: 0.5;
+}
+
+.uni-section__content-title {
+	font-size: $yeying-font-size !important;
+	color: $yeying-text-color-light;
+}
+
+.uni-forms-item__label {
+	color: $yeying-text-color;
+	font-size: $yeying-font-size !important;
+}
+.uni-forms-item {
+	//margin-bottom: 8px !important;
+}
+.uni-easyinput__content-input {
+	font-size: $yeying-font-size !important;
+}
+.uni-easyinput__placeholder-class {
+	color: $yeying-text-color-lighter;
+	font-size: $yeying-font-size !important;;
+}
+.uni-easyinput__content-textarea {
+	font-size: $yeying-font-size !important;;
+}
+.uni-input-input:disabled {
+	color: $yeying-text-color-light;
+}
+
+.uni-forms-item.is-direction-top .uni-forms-item__label {
+	padding: 0 !important;
+}
+.uni-data-checklist .checklist-group .checklist-box .checklist-content .checklist-text {
+	font-size: $yeying-font-size !important;
+}
+.uni-card .uni-card__content {
+	color: unset !important;
+	padding: 10px 0 !important;
+}
+
+.uni-tag{
+	transform: scale(0.9);
+	margin-left: 5rpx;
+	border-radius: 12rpx !important;
+	font-weight: 600 !important;
+	white-space: nowrap;
+}
+
+.uni-switch-input-checked {
+	background-color: $yeying-color-primary-light-1 !important;
+	border-color: $yeying-color-primary-light-1 !important;
+}
+.uni-modal__title {
+	font-size: $yeying-font-size-larger !important;
+}
+.uni-modal__bd {
+	font-size: $yeying-font-size;
+}
+.uni-modal__ft {
+	font-size: $yeying-font-size;
+	line-height: 90rpx !important;
+
+	.uni-modal__btn_primary {
+		color: $yeying-color-primary !important;
+	}
+}
+
+
+
+
+.nav-bar {
+	height: 100rpx;
+	padding: 0 20rpx;
+	display: flex;
+	align-items: center;
+	border-bottom: 1rpx solid $yeying-border;
+
+	.nav-search {
+		flex: 1;
+	}
+
+	.nav-add {
+		cursor: pointer;
+	}
+}
+
+
+.bottom-btn {
+	margin: 40rpx 40rpx;
+
+	uni-button + uni-button {
+		margin-top: 20rpx;
+	}
+}
+
+.emoji-large {
+	width: 64rpx !important;
+	height: 64rpx !important;
+	vertical-align: bottom !important;
+}
+
+.emoji-normal {
+	width: 54rpx !important;
+	height: 54rpx !important;
+	vertical-align: bottom !important;
+}
+
+.emoji-small {
+	width: 36rpx !important;
+	height: 36rpx !important;
+	vertical-align: bottom !important;
+}
+
+.none-pointer-events {
+	uni-image img {
+		// 阻止微信默认长按菜单
+		pointer-events: none;
+		-webkit-pointer-events: none;
+		-ms-pointer-events: none;
+		-moz-pointer-events: none;
+	 }
+}
+
+p {
+	margin-block-start: 1em;
+	margin-block-end: 1em;
+}
