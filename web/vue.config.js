@@ -28,6 +28,7 @@ module.exports = {
 		}
 	},
 	productionSourceMap: false,
+	transpileDependencies: ['@yeying-community/web3-bs'],
 	configureWebpack: {
 		optimization: {
 			splitChunks: {
