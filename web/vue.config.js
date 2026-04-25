@@ -42,12 +42,12 @@ module.exports = {
 		optimization: {
 			splitChunks: {
 				chunks: 'all',
-				cacheGroups: {
-					element: {
-						name: 'chunk-element',
-						test: /[\\\\/]node_modules[\\\\/]element-ui[\\\\/]/,
-						priority: 20
-					},
+					cacheGroups: {
+						element: {
+							name: 'chunk-element',
+							test: /[\\\\/]node_modules[\\\\/]element-plus[\\\\/]/,
+							priority: 20
+						},
 					vendors: {
 						name: 'chunk-vendors',
 						test: /[\\\\/]node_modules[\\\\/]/,

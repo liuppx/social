@@ -1,47 +1,47 @@
 @charset "UTF-8";
-@import "element";
+@use "element";
 
 // yeying全局样式变量
 :root {
   // 主色
-  --yeying-color-primary: #{$--color-primary};
-  --yeying-color-primary-light-1: #{$--color-primary-light-1};
-  --yeying-color-primary-light-2: #{$--color-primary-light-2};
-  --yeying-color-primary-light-3: #{$--color-primary-light-3};
-  --yeying-color-primary-light-4: #{$--color-primary-light-4};
-  --yeying-color-primary-light-5: #{$--color-primary-light-5};
-  --yeying-color-primary-light-6: #{$--color-primary-light-6};
-  --yeying-color-primary-light-7: #{$--color-primary-light-7};
-  --yeying-color-primary-light-8: #{$--color-primary-light-8};
-  --yeying-color-primary-light-9: #{$--color-primary-light-9};
+  --yeying-color-primary: var(--el-color-primary);
+  --yeying-color-primary-light-1: var(--el-color-primary-light-1);
+  --yeying-color-primary-light-2: var(--el-color-primary-light-2);
+  --yeying-color-primary-light-3: var(--el-color-primary-light-3);
+  --yeying-color-primary-light-4: var(--el-color-primary-light-4);
+  --yeying-color-primary-light-5: var(--el-color-primary-light-5);
+  --yeying-color-primary-light-6: var(--el-color-primary-light-6);
+  --yeying-color-primary-light-7: var(--el-color-primary-light-7);
+  --yeying-color-primary-light-8: var(--el-color-primary-light-8);
+  --yeying-color-primary-light-9: var(--el-color-primary-light-9);
 
-  --yeying-color-sucess: #{$--color-success};
-  --yeying-color-warning: #{$--color-warning};
-  --yeying-color-danger: #{$--color-danger};
-  --yeying-color-info: #{$--color-info};
+  --yeying-color-sucess: var(--el-color-success);
+  --yeying-color-warning: var(--el-color-warning);
+  --yeying-color-danger: var(--el-color-danger);
+  --yeying-color-info: var(--el-color-info);
 
   // 文字颜色
-  --yeying-text-color: #{$--color-text-regular};
+  --yeying-text-color: var(--el-text-color-regular);
   --yeying-text-color-light: #999999;
   --yeying-text-color-lighter: #C0C4CC;
 
   // 文字大小
-  --yeying-font-size: #{$--font-size-base};
-  --yeying-font-size-small: #{$--font-size-small};
-  --yeying-font-size-smaller: #{$--font-size-extra-small};
-  --yeying-font-size-large: #{$--font-size-medium};
-  --yeying-font-size-larger: #{$--font-size-large};
-  --yeying-font-family: #{$--font-family};
+  --yeying-font-size: var(--el-font-size-base);
+  --yeying-font-size-small: var(--el-font-size-small);
+  --yeying-font-size-smaller: var(--el-font-size-extra-small);
+  --yeying-font-size-large: var(--el-font-size-medium);
+  --yeying-font-size-larger: var(--el-font-size-large);
+  --yeying-font-family: var(--el-font-family);
 
 
   // 边框颜色
   --yeying-border: 1px solid #EBEEF5;
 
   // 阴影
-  --yeying-box-shadow: #{$--box-shadow-base};
-  --yeying-box-shadow-light: #{$--box-shadow-light};
+  --yeying-box-shadow: var(--el-box-shadow);
+  --yeying-box-shadow-light: var(--el-box-shadow-light);
   --yeying-box-shadow-lighter: 0px 0px 6px rgba(0, 0, 0, .12);
-  --yeying-box-shadow-dark: 0px 16px 48px 16px rgba(0, 0, 0, .08), 0px 12px 32px rgba(0, 0, 0, .12), 0px 8px 16px -8px rgba(0, 0, 0, .16);
+  --yeying-box-shadow-dark: var(--el-box-shadow-dark);
 
   // 背景色
   --yeying-background: white;

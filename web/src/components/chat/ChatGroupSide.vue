@@ -2,7 +2,9 @@
   <div class="chat-group-side">
     <div v-show="!group.quit" class="search">
       <el-input placeholder="搜索群成员" v-model="searchText" size="small">
-        <i class="el-icon-search el-input__icon" slot="prefix"> </i>
+        <template #prefix>
+          <i class="el-icon-search el-input__icon"></i>
+        </template>
       </el-input>
     </div>
     <el-scrollbar v-show="!group.quit" ref="scrollbar" :style="'height: ' + scrollHeight + 'px'">

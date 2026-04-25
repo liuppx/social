@@ -3,7 +3,9 @@
     <resizable-aside :default-width="260" :min-width="200" :max-width="500" storage-key="chat-aside-width">
       <div class="header">
         <el-input class="search-text" size="small" placeholder="搜索" v-model="searchText">
-          <i class="el-icon-search el-input__icon" slot="prefix"> </i>
+          <template #prefix>
+            <i class="el-icon-search el-input__icon"></i>
+          </template>
         </el-input>
       </div>
       <div class="chat-loading" v-if="loading" v-loading="true" element-loading-text="消息接收中..."
@@ -12,7 +14,7 @@
       <el-scrollbar class="chat-items" v-else>
         <div v-for="(chat, index) in chatStore.chats" :key="index">
           <chat-item v-show="!chat.delete && chat.showName && chat.showName.includes(searchText)" :chat="chat"
-            :index="index" @click.native="onActiveItem(index)" @delete="onDelItem(index)" @top="onTop(index)"
+            :index="index" @click="onActiveItem(index)" @delete="onDelItem(index)" @top="onTop(index)"
             @dnd="onDnd(chat)" :active="chat === chatStore.activeChat"></chat-item>
         </div>
       </el-scrollbar>

@@ -1,16 +1,18 @@
 <template>
-	<el-dialog v-dialogDrag :title="title" :visible.sync="isShow" width="700px">
+	<el-dialog v-dialogDrag :title="title" v-model="isShow" width="700px">
 		<div class="group-member-selector">
-			<div class="left-box">
-				<el-input placeholder="搜索" v-model="searchText">
-					<i class="el-icon-search el-input__icon" slot="suffix"> </i>
-				</el-input>
+				<div class="left-box">
+					<el-input placeholder="搜索" v-model="searchText">
+						<template #suffix>
+							<i class="el-icon-search el-input__icon"></i>
+						</template>
+					</el-input>
 				<virtual-scroller class="scroll-box" :items="showMembers">
 					<template v-slot="{ item }">
 						<group-member-item :group="group" :groupMembers="showMembers" :member="item" :menu="false"
-							@click.native="onClickMember(item)">
+							@click="onClickMember(item)">
 							<el-checkbox :disabled="item.locked" v-model="item.checked" @change="onChange(item)"
-								@click.native.stop=""></el-checkbox>
+								@click.stop=""></el-checkbox>
 						</group-member-item>
 					</template>
 				</virtual-scroller>
@@ -27,11 +29,13 @@
 				</el-scrollbar>
 			</div>
 		</div>
-		<span slot="footer" class="dialog-footer">
-			<el-button @click="close()">取 消</el-button>
-			<el-button type="primary" @click="ok()">确 定</el-button>
-		</span>
-	</el-dialog>
+			<template #footer>
+				<span class="dialog-footer">
+					<el-button @click="close()">取 消</el-button>
+					<el-button type="primary" @click="ok()">确 定</el-button>
+				</span>
+			</template>
+		</el-dialog>
 </template>
 
 <script>

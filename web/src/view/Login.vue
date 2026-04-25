@@ -5,7 +5,7 @@
 		<div class="decoration decoration-3"></div>
 		<div class="content">
 			<el-form class="form" :model="loginForm" status-icon :rules="rules" ref="loginForm"
-				@keyup.enter.native="submitForm('loginForm')">
+				@keyup.enter="submitForm('loginForm')">
 				<div class="title">
 					<img class="logo" src="../../public/logo.png" />
 					<div>登录Yeying Social</div>

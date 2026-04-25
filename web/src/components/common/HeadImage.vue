@@ -63,7 +63,7 @@ export default {
 						x: e.x + 30,
 						y: e.y
 					}
-					this.$eventBus.$emit("openUserInfo", user, pos);
+					this.$eventBus.emit("openUserInfo", { user, pos });
 				})
 			}
 		},

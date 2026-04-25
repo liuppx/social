@@ -52,7 +52,7 @@ export default {
     document.addEventListener('mousemove', this.handleResize);
     document.addEventListener('mouseup', this.stopResize);
   },
-  beforeDestroy() {
+  beforeUnmount() {
     // 清理事件监听
     document.removeEventListener('mousemove', this.handleResize);
     document.removeEventListener('mouseup', this.stopResize);

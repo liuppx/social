@@ -1,17 +1,19 @@
 <template>
-	<el-dialog v-dialogDrag title="邀请好友" :visible.sync="show" width="620px" :before-close="close">
+	<el-dialog v-dialogDrag title="邀请好友" v-model="show" width="620px" :before-close="close">
 		<div class="add-group-member">
-			<div class="left-box">
-				<div class="search">
-					<el-input placeholder="搜索好友" v-model="searchText" size="small">
-						<i class="el-icon-search el-input__icon" slot="suffix"> </i>
-					</el-input>
+				<div class="left-box">
+					<div class="search">
+						<el-input placeholder="搜索好友" v-model="searchText" size="small">
+							<template #suffix>
+								<i class="el-icon-search el-input__icon"></i>
+							</template>
+						</el-input>
 				</div>
 				<el-scrollbar style="height:400px;">
 					<div v-for="friend in friends" :key="friend.id">
 						<friend-item v-show="friend.nickName.includes(searchText)" :showDelete="false"
-							@click.native="onSwitchCheck(friend)" :menu="false" :friend="friend" :active="false">
-							<el-checkbox :disabled="friend.disabled" @click.native.stop="" class="checkbox"
+							@click="onSwitchCheck(friend)" :menu="false" :friend="friend" :active="false">
+							<el-checkbox :disabled="friend.disabled" @click.stop="" class="checkbox"
 								v-model="friend.isCheck" size="medium"></el-checkbox>
 						</friend-item>
 					</div>
@@ -29,11 +31,13 @@
 				</el-scrollbar>
 			</div>
 		</div>
-		<span slot="footer" class="dialog-footer">
-			<el-button @click="close()">取 消</el-button>
-			<el-button type="primary" @click="onOk()">确 定</el-button>
-		</span>
-	</el-dialog>
+			<template #footer>
+				<span class="dialog-footer">
+					<el-button @click="close()">取 消</el-button>
+					<el-button type="primary" @click="onOk()">确 定</el-button>
+				</span>
+			</template>
+		</el-dialog>
 </template>
 
 <script>

@@ -1,54 +1,54 @@
-import Vue from 'vue'
+import { createApp } from 'vue'
+import { createPinia } from 'pinia'
+import ElementPlus from 'element-plus'
+import 'element-plus/dist/index.css'
+
 import App from './App'
 import router from './router'
-import ElementUI from 'element-ui';
-import './assets/style/yeying.scss';
-import './assets/iconfont/iconfont.css';
-import { createPinia, PiniaVuePlugin } from 'pinia'
-import httpRequest from './api/httpRequest';
-import * as socketApi from './api/wssocket';
-import * as messageType from './api/messageType';
-import emotion from './api/emotion.js';
-import url from './api/url.js';
-import str from './api/str.js';
-import element from './api/element.js';
-import * as  enums from './api/enums.js';
-import * as  date from './api/date.js';
-import './utils/directive/dialogDrag';
+import './assets/style/yeying.scss'
+import './assets/iconfont/iconfont.css'
+import httpRequest from './api/httpRequest'
+import * as socketApi from './api/wssocket'
+import * as messageType from './api/messageType'
+import emotion from './api/emotion.js'
+import url from './api/url.js'
+import str from './api/str.js'
+import element from './api/element.js'
+import * as enums from './api/enums.js'
+import * as date from './api/date.js'
+import eventBus from './api/eventBus.js'
+import registerDialogDrag from './utils/directive/dialogDrag'
 import useChatStore from './store/chatStore.js'
 import useFriendStore from './store/friendStore.js'
 import useGroupStore from './store/groupStore.js'
 import useUserStore from './store/userStore.js'
 import useConfigStore from './store/configStore.js'
 
-
-Vue.use(PiniaVuePlugin)
+const app = createApp(App)
 const pinia = createPinia()
-Vue.use(ElementUI);
-// 挂载全局
-Vue.prototype.$wsApi = socketApi;
-Vue.prototype.$msgType = messageType
-Vue.prototype.$date = date;
-Vue.prototype.$http = httpRequest // http请求方法
-Vue.prototype.$emo = emotion; // emo表情
-Vue.prototype.$url = url; // url转换
-Vue.prototype.$str = str; // 字符串相关
-Vue.prototype.$elm = element; // 元素操作
-Vue.prototype.$enums = enums; // 枚举
-Vue.prototype.$eventBus = new Vue(); // 全局事件
-Vue.config.productionTip = false;
 
-new Vue({
-  el: '#app',
-  // 配置路由
-  router,
-  pinia,
-  render: h => h(App)
-})
+app.use(router)
+app.use(pinia)
+app.use(ElementPlus)
+registerDialogDrag(app)
+
+// 挂载全局
+app.config.globalProperties.$wsApi = socketApi
+app.config.globalProperties.$msgType = messageType
+app.config.globalProperties.$date = date
+app.config.globalProperties.$http = httpRequest // http请求方法
+app.config.globalProperties.$emo = emotion // emo表情
+app.config.globalProperties.$url = url // url转换
+app.config.globalProperties.$str = str // 字符串相关
+app.config.globalProperties.$elm = element // 元素操作
+app.config.globalProperties.$enums = enums // 枚举
+app.config.globalProperties.$eventBus = eventBus // 全局事件
 
 // 挂载全局的pinia
-Vue.prototype.chatStore = useChatStore();
-Vue.prototype.friendStore = useFriendStore();
-Vue.prototype.groupStore = useGroupStore();
-Vue.prototype.userStore = useUserStore();
-Vue.prototype.configStore = useConfigStore();
+app.config.globalProperties.chatStore = useChatStore(pinia)
+app.config.globalProperties.friendStore = useFriendStore(pinia)
+app.config.globalProperties.groupStore = useGroupStore(pinia)
+app.config.globalProperties.userStore = useUserStore(pinia)
+app.config.globalProperties.configStore = useConfigStore(pinia)
+
+app.mount('#app')

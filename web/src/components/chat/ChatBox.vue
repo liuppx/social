@@ -325,7 +325,7 @@ export default {
 				friend: this.friend,
 			}
 			// 通过home.vue打开单人视频窗口
-			this.$eventBus.$emit("openPrivateVideo", rtcInfo);
+			this.$eventBus.emit("openPrivateVideo", rtcInfo);
 		},
 		onGroupVideo() {
 			// 检查是否被封禁
@@ -359,7 +359,7 @@ export default {
 				userInfos: userInfos
 			}
 			// 通过home.vue打开多人视频窗口
-			this.$eventBus.$emit("openGroupVideo", rtcInfo);
+			this.$eventBus.emit("openGroupVideo", rtcInfo);
 		},
 		showHistoryBox() {
 			this.showHistory = true;

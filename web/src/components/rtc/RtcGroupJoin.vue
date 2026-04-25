@@ -1,5 +1,5 @@
 <template>
-	<el-dialog v-dialogDrag title="是否加入通话?" :visible.sync="isShow" width="400px">
+	<el-dialog v-dialogDrag title="是否加入通话?" v-model="isShow" width="400px">
 		<div class="rtc-group-join">
 			<div class="host-info">
 				<head-image :name="rtcInfo.host.nickName" :url="rtcInfo.host.headImage" :size="80"></head-image>
@@ -15,10 +15,12 @@
 				</div>
 			</div>
 		</div>
-		<span slot="footer" class="dialog-footer">
-			<el-button @click="onCancel()">取 消</el-button>
-			<el-button type="primary" @click="onOk()">确 定</el-button>
-		</span>
+		<template #footer>
+			<span class="dialog-footer">
+				<el-button @click="onCancel()">取 消</el-button>
+				<el-button type="primary" @click="onOk()">确 定</el-button>
+			</span>
+		</template>
 	</el-dialog>
 </template>
 
@@ -70,7 +72,7 @@ export default {
 				userInfos: userInfos
 			}
 			// 通过home.vue打开多人视频窗口
-			this.$eventBus.$emit("openGroupVideo", rtcInfo);
+			this.$eventBus.emit("openGroupVideo", rtcInfo);
 
 		},
 		onCancel() {

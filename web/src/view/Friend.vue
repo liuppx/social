@@ -1,10 +1,12 @@
 <template>
 	<el-container class="friend-page">
 		<resizable-aside :default-width="260" :min-width="200" :max-width="500" storage-key="friend-aside-width">
-			<div class="header">
-				<el-input class="search-text" size="small" placeholder="搜索" v-model="searchText">
-					<i class="el-icon-search el-input__icon" slot="prefix"> </i>
-				</el-input>
+				<div class="header">
+					<el-input class="search-text" size="small" placeholder="搜索" v-model="searchText">
+						<template #prefix>
+							<i class="el-icon-search el-input__icon"></i>
+						</template>
+					</el-input>
 				<el-button plain class="add-btn" icon="el-icon-plus" title="添加好友"
 					@click="onShowAddFriend()"></el-button>
 				<add-friend :dialogVisible="showAddFriend" @close="onCloseAddFriend"></add-friend>
@@ -15,7 +17,7 @@
 					<div v-for="(friend) in friends" :key="friend.id">
 						<friend-item :friend="friend" :active="friend.id === activeFriend.id"
 							@chat="onSendMessage(friend)" @delete="onDelFriend(friend)"
-							@click.native="onActiveItem(friend)">
+							@click="onActiveItem(friend)">
 						</friend-item>
 					</div>
 					<div v-if="i < friendValues.length - 1" class="divider"></div>
@@ -29,7 +31,7 @@
 			<div v-show="userInfo.id">
 				<div class="friend-info">
 					<head-image :size="160" :name="userInfo.nickName" :url="userInfo.headImage" radius="10%"
-						@click.native="showFullImage()"></head-image>
+						@click="showFullImage()"></head-image>
 					<div>
 						<div class="info-item">
 							<el-descriptions title="好友信息" class="description" :column="1">
@@ -139,7 +141,7 @@ export default {
 		},
 		showFullImage() {
 			if (this.userInfo.headImage) {
-				this.$eventBus.$emit("openFullImage", this.userInfo.headImage);
+				this.$eventBus.emit("openFullImage", this.userInfo.headImage);
 			}
 		},
 		updateFriendInfo() {

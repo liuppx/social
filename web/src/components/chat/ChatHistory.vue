@@ -1,5 +1,6 @@
 <template>
-	<el-drawer title="聊天历史记录" size="700px" :visible.sync="visible" direction="rtl" :before-close="onClose">
+		<el-drawer title="聊天历史记录" size="700px" :model-value="visible" @update:model-value="onVisibleChange"
+			direction="rtl" :before-close="onClose">
 		<div class="chat-history" v-loading="loading" element-loading-text="拼命加载中">
 			<el-scrollbar class="scroll-box" ref="scrollbar" id="historyScrollbar">
 				<ul>
@@ -50,6 +51,11 @@ export default {
 		}
 	},
 	methods: {
+		onVisibleChange(value) {
+			if (!value) {
+				this.onClose();
+			}
+		},
 		onClose() {
 			this.page = 1;
 			this.messages = [];

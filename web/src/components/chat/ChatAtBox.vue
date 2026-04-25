@@ -3,7 +3,7 @@
 		:style="{ 'left': pos.x + 'px', 'top': pos.y - 300 + 'px' }">
 		<div v-for="(member, idx) in showMembers" :key="member.id">
 			<chat-group-member :member="member" :height="40" :active='activeIdx == idx'
-				@click.native="onSelectMember(member)"></chat-group-member>
+				@click="onSelectMember(member)"></chat-group-member>
 		</div>
 	</el-scrollbar>
 </template>

@@ -3,7 +3,7 @@
 		<div class="user-info-box">
 			<div class="avatar">
 				<head-image :name="user.nickName" :url="user.headImageThumb" :size="60" :online="user.online"
-					@click.native="showFullImage()" radius="10%"> </head-image>
+					@click="showFullImage()" radius="10%"> </head-image>
 			</div>
 			<div class="info-card">
 				<div class="header">
@@ -98,7 +98,7 @@ export default {
 		},
 		showFullImage() {
 			if (this.user.headImage) {
-				this.$eventBus.$emit("openFullImage", this.user.headImage);
+				this.$eventBus.emit("openFullImage", this.user.headImage);
 			}
 		}
 	},

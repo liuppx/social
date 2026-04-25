@@ -3,7 +3,7 @@
 		<div class="right-menu" :style="{ 'left': pos.x + 'px', 'top': pos.y + 'px' }">
 			<el-menu text-color="#333333">
 				<el-menu-item v-for="(item) in items" :key="item.key" :title="item.name"
-					@click.native.stop="onSelectMenu(item)">
+					@click.stop="onSelectMenu(item)">
 					<span>{{ item.name }}</span>
 				</el-menu-item>
 			</el-menu>

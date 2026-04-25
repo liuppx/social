@@ -1,10 +1,12 @@
 <template>
 	<el-container class="group-page">
 		<resizable-aside :default-width="260" :min-width="200" :max-width="500" storage-key="group-aside-width">
-			<div class="header">
-				<el-input class="search-text" size="small" placeholder="搜索" v-model="searchText">
-					<i class="el-icon-search el-input__icon" slot="prefix"> </i>
-				</el-input>
+				<div class="header">
+					<el-input class="search-text" size="small" placeholder="搜索" v-model="searchText">
+						<template #prefix>
+							<i class="el-icon-search el-input__icon"></i>
+						</template>
+					</el-input>
 				<el-button plain class="add-btn" icon="el-icon-plus" title="创建群聊" @click="onCreateGroup()"></el-button>
 			</div>
 			<el-scrollbar class="group-items">
@@ -12,7 +14,7 @@
 					<div class="letter">{{ groupKeys[i] }}</div>
 					<div v-for="group in groups" :key="group.id">
 						<group-item :group="group" :active="group.id == activeGroup.id"
-							@click.native="onActiveItem(group)">
+							@click="onActiveItem(group)">
 						</group-item>
 					</div>
 					<div v-if="i < groupValues.length - 1" class="divider"></div>
@@ -31,7 +33,7 @@
 							<i v-else class="el-icon-plus avatar-uploader-icon"></i>
 						</file-upload>
 						<head-image v-show="!isOwner" class="avatar" :size="160" :url="activeGroup.headImage"
-							:name="activeGroup.showGroupName" radius="10%" @click.native="showFullImage()">
+							:name="activeGroup.showGroupName" radius="10%" @click="showFullImage()">
 						</head-image>
 						<el-button class="send-btn" icon="el-icon-position" type="primary" @click="onSendMessage()">发消息
 						</el-button>
@@ -260,7 +262,7 @@ export default {
 		},
 		showFullImage() {
 			if (this.activeGroup.headImage) {
-				this.$eventBus.$emit("openFullImage", this.activeGroup.headImage);
+				this.$eventBus.emit("openFullImage", this.activeGroup.headImage);
 			}
 		},
 		loadGroupMembers() {
