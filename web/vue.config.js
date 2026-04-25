@@ -28,8 +28,16 @@ module.exports = {
 			}
 		}
 	},
+	css: {
+		loaderOptions: {
+			sass: {
+				sassOptions: {
+					quietDeps: true
+				}
+			}
+		}
+	},
 	productionSourceMap: false,
-	transpileDependencies: ['@yeying-community/web3-bs'],
 	configureWebpack: {
 		optimization: {
 			splitChunks: {
