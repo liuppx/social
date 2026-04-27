@@ -5,15 +5,17 @@
 			</head-image>
 		</div>
 		<div class="friend-info">
-			<div class="friend-name">{{ friend.nickName }}</div>
-			<div class="friend-online">
-				<i class="el-icon-monitor online" v-show="friend.onlineWeb" title="电脑设备在线">
-					<span class="online-icon"></span>
-				</i>
-				<i class="el-icon-mobile-phone online" v-show="friend.onlineApp" title="移动设备在线">
-					<span class="online-icon"></span>
-				</i>
-			</div>
+				<div class="friend-name">{{ friend.nickName }}</div>
+				<div class="friend-online">
+					<span class="online-wrap" v-show="friend.onlineWeb" title="电脑设备在线">
+						<el-icon class="online"><Monitor /></el-icon>
+						<span class="online-icon"></span>
+					</span>
+					<span class="online-wrap" v-show="friend.onlineApp" title="移动设备在线">
+						<el-icon class="online"><Iphone /></el-icon>
+						<span class="online-icon"></span>
+					</span>
+				</div>
 		</div>
 		<right-menu ref="rightMenu" @select="onSelectMenu"></right-menu>
 		<slot></slot>
@@ -32,15 +34,15 @@ export default {
 	},
 	data() {
 		return {
-			menuItems: [{
-				key: 'CHAT',
-				name: '发送消息',
-				icon: 'el-icon-chat-dot-round'
-			}, {
-				key: 'DELETE',
-				name: '删除好友',
-				icon: 'el-icon-delete'
-			}]
+				menuItems: [{
+					key: 'CHAT',
+					name: '发送消息',
+					icon: 'ChatDotRound'
+				}, {
+					key: 'DELETE',
+					name: '删除好友',
+					icon: 'Delete'
+				}]
 		}
 	},
 	methods: {
@@ -108,13 +110,17 @@ export default {
 			overflow: hidden;
 		}
 
-		.friend-online {
-			.online {
-				font-weight: bold;
-				padding-right: 2px;
-				font-size: 16px;
-				position: relative;
-			}
+			.friend-online {
+				.online-wrap {
+					display: inline-flex;
+					position: relative;
+				}
+
+				.online {
+					font-weight: bold;
+					padding-right: 2px;
+					font-size: 16px;
+				}
 
 			.online-icon {
 				position: absolute;

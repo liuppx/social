@@ -1,10 +1,12 @@
 <template>
 	<div class="chat-box" @click="closeRefBox()" @mousemove="readedMessage()">
-		<el-container>
-			<el-header height="50px">
-				<span>{{ title }}</span>
-				<span title="群聊信息" v-show="isGroup" class="btn-side el-icon-more" @click="showSide = !showSide"></span>
-			</el-header>
+			<el-container>
+				<el-header height="50px">
+					<span>{{ title }}</span>
+					<el-icon title="群聊信息" v-show="isGroup" class="btn-side" @click="showSide = !showSide">
+						<More />
+					</el-icon>
+				</el-header>
 			<el-main style="padding: 0;">
 				<el-container>
 					<el-container class="content-box">
@@ -27,44 +29,52 @@
 								<div title="表情" class="icon iconfont icon-emoji" ref="emotion"
 									@click.stop="showEmotionBox()">
 								</div>
-								<div title="发送图片">
-									<file-upload :action="'/image/upload'" :maxSize="5 * 1024 * 1024"
-										:fileTypes="['image/jpeg', 'image/png', 'image/jpg', 'image/webp', 'image/gif']"
-										@before="onImageBefore" @success="onImageSuccess" @fail="onImageFail">
-										<i class="el-icon-picture-outline"></i>
-									</file-upload>
-								</div>
-								<div title="发送文件">
-									<file-upload ref="fileUpload" :action="'/file/upload'" :maxSize="10 * 1024 * 1024"
-										@before="onFileBefore" @success="onFileSuccess" @fail="onFileFail">
-										<i class="el-icon-wallet"></i>
-									</file-upload>
-								</div>
+									<div title="发送图片">
+										<file-upload :action="'/image/upload'" :maxSize="5 * 1024 * 1024"
+											:fileTypes="['image/jpeg', 'image/png', 'image/jpg', 'image/webp', 'image/gif']"
+											@before="onImageBefore" @success="onImageSuccess" @fail="onImageFail">
+											<el-icon><Picture /></el-icon>
+										</file-upload>
+									</div>
+									<div title="发送文件">
+										<file-upload ref="fileUpload" :action="'/file/upload'" :maxSize="10 * 1024 * 1024"
+											@before="onFileBefore" @success="onFileSuccess" @fail="onFileFail">
+											<el-icon><Wallet /></el-icon>
+										</file-upload>
+									</div>
 								<div title="回执消息" v-show="isGroup && memberSize <= 500"
 									class="icon iconfont icon-receipt" :class="isReceipt ? 'chat-tool-active' : ''"
 									@click="onSwitchReceipt">
 								</div>
-								<div title="发送语音" class="el-icon-microphone" @click="showRecordBox()">
-								</div>
-								<div title="语音通话" v-show="isPrivate" class="el-icon-phone-outline"
-									@click="showPrivateVideo('voice')">
-								</div>
-								<div title="语音通话" v-show="isGroup" class="el-icon-phone-outline"
-									@click="onGroupVideo()">
-								</div>
-								<div title="视频通话" v-show="isPrivate" class="el-icon-video-camera"
-									@click="showPrivateVideo('video')">
-								</div>
-								<div title="聊天记录" class="el-icon-chat-dot-round" @click="showHistoryBox()"></div>
+									<div title="发送语音" @click="showRecordBox()">
+										<el-icon><Microphone /></el-icon>
+									</div>
+									<div title="语音通话" v-show="isPrivate"
+										@click="showPrivateVideo('voice')">
+										<el-icon><Phone /></el-icon>
+									</div>
+									<div title="语音通话" v-show="isGroup"
+										@click="onGroupVideo()">
+										<el-icon><Phone /></el-icon>
+									</div>
+									<div title="视频通话" v-show="isPrivate"
+										@click="showPrivateVideo('video')">
+										<el-icon><VideoCamera /></el-icon>
+									</div>
+									<div title="聊天记录" @click="showHistoryBox()">
+										<el-icon><ChatDotRound /></el-icon>
+									</div>
 							</div>
 							<div class="send-content-area">
 								<ChatInput :ownerId="group.ownerId" ref="chatInputEditor" :group-members="groupMembers"
 									@submit="sendMessage" />
-								<div class="send-btn-area">
-									<el-button type="primary" icon="el-icon-s-promotion"
-										@click="notifySend()">发送</el-button>
+									<div class="send-btn-area">
+										<el-button type="primary" @click="notifySend()">
+											<el-icon><Promotion /></el-icon>
+											<span>发送</span>
+										</el-button>
+									</div>
 								</div>
-							</div>
 						</el-footer>
 					</el-container>
 					<el-aside class="side-box" width="320px" v-if="showSide">

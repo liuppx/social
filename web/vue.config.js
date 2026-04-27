@@ -1,3 +1,7 @@
+const AutoImport = require('unplugin-auto-import/webpack').default
+const Components = require('unplugin-vue-components/webpack').default
+const { ElementPlusResolver } = require('unplugin-vue-components/resolvers')
+
 module.exports = {
 	devServer: {
 		port: 8082,
@@ -29,6 +33,9 @@ module.exports = {
 		}
 	},
 	css: {
+		extract: {
+			ignoreOrder: true
+		},
 		loaderOptions: {
 			sass: {
 				sassOptions: {
@@ -39,15 +46,25 @@ module.exports = {
 	},
 	productionSourceMap: false,
 	configureWebpack: {
+		plugins: [
+			AutoImport({
+				dts: false,
+				resolvers: [ElementPlusResolver()]
+			}),
+			Components({
+				dts: false,
+				resolvers: [ElementPlusResolver({ directives: true })]
+			})
+		],
 		optimization: {
 			splitChunks: {
 				chunks: 'all',
-					cacheGroups: {
-						element: {
-							name: 'chunk-element',
-							test: /[\\\\/]node_modules[\\\\/]element-plus[\\\\/]/,
-							priority: 20
-						},
+				cacheGroups: {
+					element: {
+						name: 'chunk-element',
+						test: /[\\\\/]node_modules[\\\\/]element-plus[\\\\/]/,
+						priority: 20
+					},
 					vendors: {
 						name: 'chunk-vendors',
 						test: /[\\\\/]node_modules[\\\\/]/,

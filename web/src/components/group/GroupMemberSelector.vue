@@ -2,11 +2,11 @@
 	<el-dialog v-dialogDrag :title="title" v-model="isShow" width="700px">
 		<div class="group-member-selector">
 				<div class="left-box">
-					<el-input placeholder="搜索" v-model="searchText">
-						<template #suffix>
-							<i class="el-icon-search el-input__icon"></i>
-						</template>
-					</el-input>
+						<el-input placeholder="搜索" v-model="searchText">
+							<template #suffix>
+								<el-icon><Search /></el-icon>
+							</template>
+						</el-input>
 				<virtual-scroller class="scroll-box" :items="showMembers">
 					<template v-slot="{ item }">
 						<group-member-item :group="group" :groupMembers="showMembers" :member="item" :menu="false"
@@ -17,7 +17,9 @@
 					</template>
 				</virtual-scroller>
 			</div>
-			<div class="arrow el-icon-d-arrow-right"></div>
+				<div class="arrow">
+					<el-icon><DArrowRight /></el-icon>
+				</div>
 			<div class="right-box">
 				<div class="select-tip"> 已勾选{{ checkedMembers.length }}位成员</div>
 				<el-scrollbar class="scroll-box">

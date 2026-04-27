@@ -2,13 +2,15 @@
 	<el-container class="group-page">
 		<resizable-aside :default-width="260" :min-width="200" :max-width="500" storage-key="group-aside-width">
 				<div class="header">
-					<el-input class="search-text" size="small" placeholder="搜索" v-model="searchText">
-						<template #prefix>
-							<i class="el-icon-search el-input__icon"></i>
-						</template>
-					</el-input>
-				<el-button plain class="add-btn" icon="el-icon-plus" title="创建群聊" @click="onCreateGroup()"></el-button>
-			</div>
+						<el-input class="search-text" size="small" placeholder="搜索" v-model="searchText">
+							<template #prefix>
+								<el-icon><Search /></el-icon>
+							</template>
+						</el-input>
+					<el-button plain class="add-btn" title="创建群聊" @click="onCreateGroup()">
+						<el-icon><Plus /></el-icon>
+					</el-button>
+				</div>
 			<el-scrollbar class="group-items">
 				<div v-for="(groups, i) in groupValues" :key="i">
 					<div class="letter">{{ groupKeys[i] }}</div>
@@ -28,15 +30,17 @@
 					<div>
 						<file-upload v-show="isOwner" class="avatar-uploader" :action="imageAction" :showLoading="true"
 							:maxSize="maxSize" @success="onUploadSuccess"
-							:fileTypes="['image/jpeg', 'image/png', 'image/jpg', 'image/webp']">
-							<img v-if="activeGroup.headImage" :src="activeGroup.headImage" class="avatar">
-							<i v-else class="el-icon-plus avatar-uploader-icon"></i>
-						</file-upload>
+								:fileTypes="['image/jpeg', 'image/png', 'image/jpg', 'image/webp']">
+								<img v-if="activeGroup.headImage" :src="activeGroup.headImage" class="avatar">
+								<el-icon v-else class="avatar-uploader-icon"><Plus /></el-icon>
+							</file-upload>
 						<head-image v-show="!isOwner" class="avatar" :size="160" :url="activeGroup.headImage"
 							:name="activeGroup.showGroupName" radius="10%" @click="showFullImage()">
 						</head-image>
-						<el-button class="send-btn" icon="el-icon-position" type="primary" @click="onSendMessage()">发消息
-						</el-button>
+							<el-button class="send-btn" type="primary" @click="onSendMessage()">
+								<el-icon><Position /></el-icon>
+								<span>发消息</span>
+							</el-button>
 					</div>
 					<el-form class="form" label-width="130px" :model="activeGroup" :rules="rules" size="small"
 						ref="groupForm">
@@ -69,18 +73,18 @@
 				<el-divider content-position="center"></el-divider>
 				<el-scrollbar ref="scrollbar" :style="'height: ' + scrollHeight + 'px'">
 					<div class="member-items">
-						<div class="member-tools">
-							<div class="tool-btn" title="邀请好友进群聊" @click="onInvite()">
-								<i class="el-icon-plus"></i>
-							</div>
+							<div class="member-tools">
+								<div class="tool-btn" title="邀请好友进群聊" @click="onInvite()">
+									<el-icon><Plus /></el-icon>
+								</div>
 							<div class="tool-text">邀请</div>
 							<add-group-member ref="addGroupMember" :groupId="activeGroup.id" :members="groupMembers"
 								@reload="loadGroupMembers"></add-group-member>
 						</div>
-						<div class="member-tools" v-if="isOwner">
-							<div class="tool-btn" title="选择成员移出群聊" @click="onRemove()">
-								<i class="el-icon-minus"></i>
-							</div>
+							<div class="member-tools" v-if="isOwner">
+								<div class="tool-btn" title="选择成员移出群聊" @click="onRemove()">
+									<el-icon><Minus /></el-icon>
+								</div>
 							<div class="tool-text">移除</div>
 							<group-member-selector ref="removeSelector" title="选择成员进行移除" :group="activeGroup"
 								@complete="onRemoveComplete"></group-member-selector>

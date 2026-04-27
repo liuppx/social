@@ -4,7 +4,9 @@
 		<div class="image-box">
 			<img :src="url" />
 		</div>
-		<div class="close" @click="close"><i class="el-icon-close"></i></div>
+		<div class="close" @click="close">
+			<el-icon><Close /></el-icon>
+		</div>
 	</div>
 </template>
 
@@ -63,7 +65,7 @@ export default {
 		}
 	}
 
-	.close {
+		.close {
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -76,11 +78,11 @@ export default {
 		padding: 10px;
 		opacity: 0.5;
 
-		i {
-			font-weight: bold;
-			font-size: 20px;
-			color: white;
+			.el-icon {
+				font-weight: bold;
+				font-size: 20px;
+				color: white;
+			}
 		}
-	}
 }
 </style>

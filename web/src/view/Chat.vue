@@ -4,12 +4,12 @@
       <div class="header">
         <el-input class="search-text" size="small" placeholder="搜索" v-model="searchText">
           <template #prefix>
-            <i class="el-icon-search el-input__icon"></i>
+            <el-icon><Search /></el-icon>
           </template>
         </el-input>
       </div>
       <div class="chat-loading" v-if="loading" v-loading="true" element-loading-text="消息接收中..."
-        element-loading-spinner="el-icon-loading" element-loading-background="#F9F9F9" element-loading-size="24">
+        element-loading-background="#F9F9F9">
       </div>
       <el-scrollbar class="chat-items" v-else>
         <div v-for="(chat, index) in chatStore.chats" :key="index">
@@ -112,11 +112,6 @@ export default {
   .chat-loading {
     height: 50px;
     background-color: #eee;
-
-    .el-icon-loading {
-      font-size: 24px;
-      color: var(--yeying-text-color-light);
-    }
 
     .el-loading-text {
       color: var(--yeying-text-color-light);

@@ -45,14 +45,13 @@ export default {
 	methods: {
 		onFileUpload(file) {
 			// 展示加载条
-			if (this.showLoading) {
-				this.loading = this.$loading({
-					lock: true,
-					text: '正在上传...',
-					spinner: 'el-icon-loading',
-					background: 'rgba(0, 0, 0, 0.7)'
-				});
-			}
+				if (this.showLoading) {
+					this.loading = this.$loading({
+						lock: true,
+						text: '正在上传...',
+						background: 'rgba(0, 0, 0, 0.7)'
+					});
+				}
 			let formData = new FormData()
 			formData.append('file', file.file)
 			let url = this.action;

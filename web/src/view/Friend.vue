@@ -2,15 +2,16 @@
 	<el-container class="friend-page">
 		<resizable-aside :default-width="260" :min-width="200" :max-width="500" storage-key="friend-aside-width">
 				<div class="header">
-					<el-input class="search-text" size="small" placeholder="搜索" v-model="searchText">
-						<template #prefix>
-							<i class="el-icon-search el-input__icon"></i>
-						</template>
-					</el-input>
-				<el-button plain class="add-btn" icon="el-icon-plus" title="添加好友"
-					@click="onShowAddFriend()"></el-button>
-				<add-friend :dialogVisible="showAddFriend" @close="onCloseAddFriend"></add-friend>
-			</div>
+						<el-input class="search-text" size="small" placeholder="搜索" v-model="searchText">
+							<template #prefix>
+								<el-icon><Search /></el-icon>
+							</template>
+						</el-input>
+					<el-button plain class="add-btn" title="添加好友" @click="onShowAddFriend()">
+						<el-icon><Plus /></el-icon>
+					</el-button>
+					<add-friend :dialogVisible="showAddFriend" @close="onCloseAddFriend"></add-friend>
+				</div>
 			<el-scrollbar class="friend-items">
 				<div v-for="(friends, i) in friendValues" :key="i">
 					<div class="letter">{{ friendKeys[i] }}</div>
@@ -43,15 +44,21 @@
 								}}</el-descriptions-item>
 								<el-descriptions-item label="签名">{{ userInfo.signature }}</el-descriptions-item>
 							</el-descriptions>
-						</div>
-						<div class="btn-group">
-							<el-button v-show="isFriend" icon="el-icon-position" type="primary"
-								@click="onSendMessage(activeFriend)">发消息</el-button>
-							<el-button v-show="!isFriend" icon="el-icon-plus" type="primary"
-								@click="onAddFriend(userInfo)">加为好友</el-button>
-							<el-button v-show="isFriend" icon="el-icon-delete" type="danger"
-								@click="onDelFriend(userInfo)">删除好友</el-button>
-						</div>
+							</div>
+							<div class="btn-group">
+								<el-button v-show="isFriend" type="primary" @click="onSendMessage(activeFriend)">
+									<el-icon><Position /></el-icon>
+									<span>发消息</span>
+								</el-button>
+								<el-button v-show="!isFriend" type="primary" @click="onAddFriend(userInfo)">
+									<el-icon><Plus /></el-icon>
+									<span>加为好友</span>
+								</el-button>
+								<el-button v-show="isFriend" type="danger" @click="onDelFriend(userInfo)">
+									<el-icon><Delete /></el-icon>
+									<span>删除好友</span>
+								</el-button>
+							</div>
 					</div>
 				</div>
 			</div>

@@ -285,9 +285,10 @@ export default {
 			left.className = 'file-position-left';
 			container.appendChild(left);
 
-			let icon = document.createElement('div');
-			icon.className = 'el-icon-document';
-			left.appendChild(icon);
+				let icon = document.createElement('div');
+				icon.className = 'chat-file-doc-icon';
+				icon.innerText = '📄';
+				left.appendChild(icon);
 
 			let right = document.createElement('div');
 			right.className = 'file-position-right';
@@ -507,11 +508,11 @@ export default {
 				justify-content: center;
 				align-items: center;
 
-				.el-icon-document {
-					font-size: 40px;
-					text-align: center;
-					color: #d42e07;
-				}
+					.chat-file-doc-icon {
+						font-size: 40px;
+						text-align: center;
+						color: #d42e07;
+					}
 			}
 
 			.file-position-right {

@@ -3,11 +3,11 @@
 		<div class="add-group-member">
 				<div class="left-box">
 					<div class="search">
-						<el-input placeholder="搜索好友" v-model="searchText" size="small">
-							<template #suffix>
-								<i class="el-icon-search el-input__icon"></i>
-							</template>
-						</el-input>
+							<el-input placeholder="搜索好友" v-model="searchText" size="small">
+								<template #suffix>
+									<el-icon><Search /></el-icon>
+								</template>
+							</el-input>
 				</div>
 				<el-scrollbar style="height:400px;">
 					<div v-for="friend in friends" :key="friend.id">
@@ -19,7 +19,9 @@
 					</div>
 				</el-scrollbar>
 			</div>
-			<div class="arrow el-icon-d-arrow-right"></div>
+				<div class="arrow">
+					<el-icon><DArrowRight /></el-icon>
+				</div>
 			<div class="right-box">
 				<div class="tip"> 已勾选{{ checkCount }}位好友</div>
 				<el-scrollbar style="height:400px;">

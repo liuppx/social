@@ -1,12 +1,12 @@
 <template>
-		<el-dialog v-dialogDrag title="添加好友" :model-value="dialogVisible" @update:model-value="onDialogVisibleChange"
-			width="400px" :before-close="onClose" custom-class="add-friend">
-			<el-input placeholder="输入用户名或昵称按下enter搜索，最多展示20条" class="input-with-select" v-model="searchText" size="small"
-				@keyup.enter="onSearch()">
-				<template #suffix>
-					<i class="el-icon-search el-input__icon" @click="onSearch()"></i>
-				</template>
-			</el-input>
+			<el-dialog v-dialogDrag class="add-friend" title="添加好友" :model-value="dialogVisible"
+				@update:model-value="onDialogVisibleChange" width="400px" :before-close="onClose">
+				<el-input placeholder="输入用户名或昵称按下enter搜索，最多展示20条" class="input-with-select" v-model="searchText" size="small"
+					@keyup.enter="onSearch()">
+					<template #suffix>
+						<el-icon @click="onSearch()"><Search /></el-icon>
+					</template>
+				</el-input>
 		<el-scrollbar style="height:400px">
 			<div v-for="(user) in users" :key="user.id" v-show="user.id != userStore.userInfo.id">
 				<div class="item">
@@ -23,9 +23,9 @@
 							<div>用户名:{{ user.userName }}</div>
 						</div>
 					</div>
-					<el-button type="primary" size="mini" v-show="!isFriend(user.id)"
-						@click="onAddFriend(user)">添加</el-button>
-					<el-button type="info" size="mini" v-show="isFriend(user.id)" plain disabled>已添加</el-button>
+						<el-button type="primary" size="small" v-show="!isFriend(user.id)"
+							@click="onAddFriend(user)">添加</el-button>
+						<el-button type="info" size="small" v-show="isFriend(user.id)" plain disabled>已添加</el-button>
 				</div>
 			</div>
 		</el-scrollbar>

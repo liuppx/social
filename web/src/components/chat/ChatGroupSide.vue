@@ -3,7 +3,7 @@
     <div v-show="!group.quit" class="search">
       <el-input placeholder="搜索群成员" v-model="searchText" size="small">
         <template #prefix>
-          <i class="el-icon-search el-input__icon"></i>
+          <el-icon><Search /></el-icon>
         </template>
       </el-input>
     </div>
@@ -11,7 +11,7 @@
       <div class="member-list">
         <div class="member-tools">
           <div class="tool-btn" title="邀请好友进群聊" @click="onInvite()">
-            <i class="el-icon-plus"></i>
+            <el-icon><Plus /></el-icon>
           </div>
           <div class="tool-text">邀请</div>
           <add-group-member ref="addGroupMember" :groupId="group.id" :members="groupMembers"
@@ -19,7 +19,7 @@
         </div>
         <div class="member-tools" v-if="isOwner">
           <div class="tool-btn" title="选择成员移出群聊" @click="onRemove()">
-            <i class="el-icon-minus"></i>
+            <el-icon><Minus /></el-icon>
           </div>
           <div class="tool-text">移除</div>
           <group-member-selector ref="removeSelector" title="选择成员进行移除" :group="group"

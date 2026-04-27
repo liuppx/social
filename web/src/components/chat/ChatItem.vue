@@ -9,7 +9,7 @@
 			<div class="chat-name">
 				<div class="chat-name-text">
 					<div>{{ chat.showName }}</div>
-					<el-tag v-if="chat.type == 'GROUP'" type="primary" size="mini">群</el-tag>
+						<el-tag v-if="chat.type == 'GROUP'" type="primary" size="small">群</el-tag>
 				</div>
 				<div class="chat-time-text">{{ showTime }}</div>
 			</div>
