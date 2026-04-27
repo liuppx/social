@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-dialog v-dialogDrag class="rtc-private-video-dialog" top="5vh" :title="title" :width="width"
+    <el-dialog draggable class="rtc-private-video-dialog" top="5vh" :title="title" :width="width"
       v-model="showRoom" :close-on-click-modal="false" :close-on-press-escape="false" :before-close="onQuit">
       <div class="rtc-private-video">
         <div v-show="isVideo" class="rtc-video-box">

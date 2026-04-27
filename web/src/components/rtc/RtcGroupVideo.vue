@@ -1,5 +1,5 @@
 <template>
-	<el-dialog v-dialogDrag top="5vh" title="语音通话" :close-on-click-modal="false" :close-on-press-escape="false"
+	<el-dialog draggable top="5vh" title="语音通话" :close-on-click-modal="false" :close-on-press-escape="false"
 		v-model="isShow" width="50%">
 		<div class='rtc-group-video'>
 			<div style="padding-top:30px;font-weight: 600; text-align: center;font-size: 16px;">

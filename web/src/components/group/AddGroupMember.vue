@@ -1,5 +1,5 @@
 <template>
-	<el-dialog v-dialogDrag title="邀请好友" v-model="show" width="620px" :before-close="close">
+	<el-dialog draggable title="邀请好友" v-model="show" width="620px" :before-close="close">
 		<div class="add-group-member">
 				<div class="left-box">
 					<div class="search">

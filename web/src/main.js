@@ -42,7 +42,6 @@ import element from './api/element.js'
 import * as enums from './api/enums.js'
 import * as date from './api/date.js'
 import eventBus from './api/eventBus.js'
-import registerDialogDrag from './utils/directive/dialogDrag'
 import useChatStore from './store/chatStore.js'
 import useFriendStore from './store/friendStore.js'
 import useGroupStore from './store/groupStore.js'
@@ -85,8 +84,6 @@ const iconComponents = {
 for (const [key, component] of Object.entries(iconComponents)) {
 	app.component(key, component)
 }
-
-registerDialogDrag(app)
 
 // 挂载全局
 app.config.globalProperties.$wsApi = socketApi

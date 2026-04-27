@@ -1,5 +1,5 @@
 <template>
-		<el-dialog v-dialogDrag class="setting" title="设置" :model-value="visible" @update:model-value="onVisibleChange"
+		<el-dialog draggable class="setting" title="设置" :model-value="visible" @update:model-value="onVisibleChange"
 			width="420px" :before-close="onClose">
 		<el-form :model="userInfo" label-width="80px" :rules="rules" ref="settingForm" size="small">
 			<el-form-item label="头像" style="margin-bottom: 0 !important;">

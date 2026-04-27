@@ -1,5 +1,5 @@
 <template>
-		<el-dialog v-dialogDrag class="chat-record" title="语音录制" :model-value="visible"
+		<el-dialog draggable class="chat-record" title="语音录制" :model-value="visible"
 			@update:model-value="onVisibleChange" width="600px" :before-close="onClose">
 		<div v-show="mode == 'RECORD'">
 			<div class="tip">{{ stateTip }}</div>

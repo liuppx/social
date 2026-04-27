@@ -1,5 +1,5 @@
 <template>
-			<el-dialog v-dialogDrag class="add-friend" title="添加好友" :model-value="dialogVisible"
+			<el-dialog draggable class="add-friend" title="添加好友" :model-value="dialogVisible"
 				@update:model-value="onDialogVisibleChange" width="400px" :before-close="onClose">
 				<el-input placeholder="输入用户名或昵称按下enter搜索，最多展示20条" class="input-with-select" v-model="searchText" size="small"
 					@keyup.enter="onSearch()">
