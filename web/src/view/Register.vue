@@ -9,11 +9,11 @@
 				<div>欢迎成为Yeying Social的用户</div>
 			</div>
 			<el-form-item label="用户名" prop="userName">
-				<el-input type="userName" v-model="registerForm.userName" autocomplete="off" placeholder="用户名(登录使用)"
+				<el-input type="text" v-model="registerForm.userName" autocomplete="off" placeholder="用户名(登录使用)"
 					maxlength="20"></el-input>
 			</el-form-item>
 			<el-form-item label="昵称" prop="nickName">
-				<el-input type="nickName" v-model="registerForm.nickName" autocomplete="off" placeholder="昵称"
+				<el-input type="text" v-model="registerForm.nickName" autocomplete="off" placeholder="昵称"
 					maxlength="20"></el-input>
 			</el-form-item>
 			<el-form-item label="密码" prop="password">

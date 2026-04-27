@@ -106,6 +106,10 @@ export default {
 		},
 		onSendRecord() {
 			let wav = this.rc.getWAVBlob();
+			if (!wav) {
+				this.$message.error("录音数据为空，请重新录制");
+				return;
+			}
 			let name = new Date().getDate() + '.wav';
 			var formData = new window.FormData()
 			formData.append('file', wav, name);
@@ -123,6 +127,9 @@ export default {
 				}
 				this.$emit("send", data);
 				this.onClose();
+			}).catch((error) => {
+				const message = error?.message || error?.msg || error?.data?.message || "语音上传失败，请稍后重试";
+				this.$message.error(message);
 			})
 		}
 	}

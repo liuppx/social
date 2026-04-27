@@ -3,6 +3,18 @@
 
 // yeying全局样式变量
 :root {
+  /* 固定为升级前主题色阶，避免 Element Plus 默认变量导致偏色 */
+  --el-color-primary: #2830d3;
+  --el-color-primary-light-1: #3e45d7;
+  --el-color-primary-light-2: #5359dc;
+  --el-color-primary-light-3: #666ee0;
+  --el-color-primary-light-4: #7e83e5;
+  --el-color-primary-light-5: #9498e9;
+  --el-color-primary-light-6: #a9aced;
+  --el-color-primary-light-7: #bfc1f2;
+  --el-color-primary-light-8: #d4d6f6;
+  --el-color-primary-light-9: #eaeafb;
+
   // 主色
   --yeying-color-primary: var(--el-color-primary);
   --yeying-color-primary-light-1: var(--el-color-primary-light-1);

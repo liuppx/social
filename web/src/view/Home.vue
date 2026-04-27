@@ -29,10 +29,10 @@
 						</div>
 					</div>
 
-					<div class="botoom">
-						<div class="bottom-item" @click="onSwtichFullScreen">
-							<i class="el-icon-full-screen"></i>
-						</div>
+						<div class="botoom">
+							<div class="bottom-item" @click="onSwtichFullScreen">
+								<el-icon><FullScreen /></el-icon>
+							</div>
 						<div class="bottom-item" @click="showSetting">
 							<span class="icon iconfont icon-setting" style="font-size: 20px"></span>
 						</div>
@@ -56,22 +56,15 @@
 
 <script>
 import HeadImage from '../components/common/HeadImage.vue';
-import Setting from '../components/setting/Setting.vue';
-import UserInfo from '../components/common/UserInfo.vue';
-import FullImage from '../components/common/FullImage.vue';
-import RtcPrivateVideo from '../components/rtc/RtcPrivateVideo.vue';
-import RtcPrivateAcceptor from '../components/rtc/RtcPrivateAcceptor.vue';
-import RtcGroupVideo from '../components/rtc/RtcGroupVideo.vue';
 
 export default {
 	components: {
 		HeadImage,
-		Setting,
-		UserInfo,
-		FullImage,
-		RtcPrivateVideo,
-		RtcPrivateAcceptor,
-		RtcGroupVideo
+		Setting: () => import('../components/setting/Setting.vue'),
+		UserInfo: () => import('../components/common/UserInfo.vue'),
+		FullImage: () => import('../components/common/FullImage.vue'),
+		RtcPrivateVideo: () => import('../components/rtc/RtcPrivateVideo.vue'),
+		RtcGroupVideo: () => import('../components/rtc/RtcGroupVideo.vue')
 	},
 		data() {
 			return {

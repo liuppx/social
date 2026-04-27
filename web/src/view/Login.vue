@@ -11,16 +11,22 @@
 					<div>登录Yeying Social</div>
 				</div>
 				<el-form-item prop="terminal" v-show="false">
-					<el-input type="terminal" v-model="loginForm.terminal" autocomplete="off"></el-input>
+					<el-input type="text" v-model="loginForm.terminal" autocomplete="off"></el-input>
 				</el-form-item>
-				<el-form-item prop="userName">
-					<el-input type="userName" v-model="loginForm.userName" autocomplete="off" placeholder="用户名"
-						prefix-icon="el-icon-user"></el-input>
-				</el-form-item>
-				<el-form-item prop="password">
-					<el-input type="password" v-model="loginForm.password" autocomplete="off" placeholder="密码"
-						prefix-icon="el-icon-lock"></el-input>
-				</el-form-item>
+					<el-form-item prop="userName">
+						<el-input type="text" v-model="loginForm.userName" autocomplete="off" placeholder="用户名">
+							<template #prefix>
+								<el-icon><User /></el-icon>
+							</template>
+						</el-input>
+					</el-form-item>
+					<el-form-item prop="password">
+						<el-input type="password" v-model="loginForm.password" autocomplete="off" placeholder="密码">
+							<template #prefix>
+								<el-icon><Lock /></el-icon>
+							</template>
+						</el-input>
+					</el-form-item>
 				<el-form-item>
 					<el-button type="primary" @click="submitForm('loginForm')">登录</el-button>
 					<el-button @click="resetForm('loginForm')">清空</el-button>
@@ -97,25 +103,27 @@ export default {
 		submitForm(formName) {
 			this.$refs[formName].validate((valid) => {
 				if (valid) {
-					this.$http({
-						url: "/login",
-						method: 'post',
-						data: this.loginForm
-					})
-						.then((data) => {
+						this.$http({
+							url: "/login",
+							method: 'post',
+							data: this.loginForm
+						})
+							.then((data) => {
 							// 保存密码到cookie(不安全)
 							this.setCookie('username', this.loginForm.userName);
 							this.setCookie('password', this.loginForm.password);
 							// 保存token
 							sessionStorage.setItem("accessToken", data.accessToken);
-							sessionStorage.setItem("refreshToken", data.refreshToken);
-							this.$message.success("登录成功");
-							this.$router.push("/home/chat");
-						})
+								sessionStorage.setItem("refreshToken", data.refreshToken);
+								this.$message.success("登录成功");
+								this.$router.push("/home/chat");
+							}).catch(() => {
+								// 错误提示由http拦截器统一处理，这里吞掉异常避免Uncaught
+							})
 
-				}
-			});
-		},
+					}
+				});
+			},
 		resetForm(formName) {
 			this.$refs[formName].resetFields();
 		},

@@ -34,7 +34,7 @@
 									<div class="chat-file-size">{{ fileSize }}</div>
 								</div>
 								<div class="chat-file-icon">
-									<span type="primary" class="el-icon-document"></span>
+									<el-icon><Document /></el-icon>
 								</div>
 							</div>
 						</div>
@@ -43,7 +43,8 @@
 							<audio controls :src="JSON.parse(msgInfo.content).url"></audio>
 						</div>
 						<div title="发送中" v-if="sending" class="sending" v-loading="'true'"></div>
-						<div title="发送失败" v-else-if="sendFail" @click="onSendFail" class="send-fail el-icon-warning">
+						<div title="发送失败" v-else-if="sendFail" @click="onSendFail" class="send-fail">
+							<el-icon><Warning /></el-icon>
 						</div>
 					</div>
 					<div class="chat-action message-text" v-if="isAction">
@@ -127,10 +128,13 @@ export default {
 		onPlayVoice() {
 			if (!this.audio) {
 				this.audio = new Audio();
+				this.audio.onended = () => {
+					this.audioPlayState = 'STOP';
+				};
 			}
 			this.audio.src = JSON.parse(this.msgInfo.content).url;
 			this.audio.play();
-			this.onPlayVoice = 'RUNNING';
+			this.audioPlayState = 'RUNNING';
 		},
 		showRightMenu(e) {
 			this.$refs.rightMenu.open(e, this.menuItems);
@@ -165,18 +169,18 @@ export default {
 		},
 		menuItems() {
 			let items = [];
-			items.push({
-				key: 'DELETE',
-				name: '删除',
-				icon: 'el-icon-delete'
-			});
-			if (this.msgInfo.selfSend && this.msgInfo.id > 0) {
 				items.push({
-					key: 'RECALL',
-					name: '撤回',
-					icon: 'el-icon-refresh-left'
+					key: 'DELETE',
+					name: '删除',
+					icon: 'Delete'
 				});
-			}
+				if (this.msgInfo.selfSend && this.msgInfo.id > 0) {
+					items.push({
+						key: 'RECALL',
+						name: '撤回',
+						icon: 'RefreshLeft'
+					});
+				}
 			return items;
 		},
 		isTextMessage() {
@@ -280,12 +284,16 @@ export default {
 						}
 					}
 
-					.send-fail {
-						color: #e45050;
-						font-size: 30px;
-						cursor: pointer;
-						margin: 0 5px;
-					}
+						.send-fail {
+							color: #e45050;
+							font-size: 30px;
+							cursor: pointer;
+							margin: 0 5px;
+
+							.el-icon {
+								font-size: inherit;
+							}
+						}
 				}
 
 				.message-text {
@@ -352,10 +360,14 @@ export default {
 							}
 						}
 
-						.chat-file-icon {
-							font-size: 44px;
-							color: #d42e07;
-						}
+							.chat-file-icon {
+								font-size: 44px;
+								color: #d42e07;
+
+								.el-icon {
+									font-size: inherit;
+								}
+							}
 					}
 
 					.send-fail {
