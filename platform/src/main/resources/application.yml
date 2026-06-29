@@ -31,3 +31,11 @@ jwt:
   refreshToken:
     expireIn: 604800 #7天
     secret: IKDiqVmn0VFU
+
+ai:
+  enabled: false
+  chat-completions-url:
+  api-key:
+  model: gpt-4o-mini
+  timeout-ms: 10000
+  max-context-messages: 20

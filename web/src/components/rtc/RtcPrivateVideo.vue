@@ -131,7 +131,7 @@ export default {
         this.close();
       })
     },
-    onAccept() {
+    async onAccept() {
       if (!this.checkDevEnable()) {
         this.API.failed(this.friend.id, "对方设备不支持通话")
         this.close();
@@ -144,17 +144,19 @@ export default {
       this.audio.pause();
       // 初始化webrtc
       this.initRtc();
-      // 打开摄像头
-      this.openStream().finally(() => {
+      try {
+        // 打开摄像头
+        await this.openStream();
         this.webrtc.setStream(this.localStream);
-        this.webrtc.createAnswer(this.offer).then((answer) => {
-          this.API.accept(this.friend.id, answer);
-          // 记录时长
-          this.startChatTime();
-          // 清理定时器
-          this.waitTimer && clearTimeout(this.waitTimer);
-        })
-      })
+        const answer = await this.webrtc.createAnswer(this.offer);
+        await this.API.accept(this.friend.id, answer);
+        // 记录时长
+        this.startChatTime();
+        // 清理定时器
+        this.waitTimer && clearTimeout(this.waitTimer);
+      } catch (e) {
+        this.close();
+      }
     },
     onReject() {
       // 退出通话

@@ -339,6 +339,31 @@ export default {
 			}
 			return divElement;
 		},
+		getPlainText() {
+			return this.$refs.content.innerText.replace(/\u00A0/g, ' ').trim();
+		},
+		setText(text) {
+			this.imageList = [];
+			this.fileList = [];
+			this.$refs.content.innerHTML = "";
+			let lines = (text || '').split(/\r?\n/);
+			if (lines.length === 0) {
+				lines = [''];
+			}
+			let lastNode = null;
+			lines.forEach(lineText => {
+				let line = document.createElement('div');
+				let textNode = document.createTextNode(lineText || '\u00A0');
+				line.appendChild(textNode);
+				this.$refs.content.appendChild(line);
+				lastNode = textNode;
+			});
+			this.isEmpty = !text || !text.trim();
+			this.focus();
+			if (lastNode) {
+				this.selectElement(lastNode, lastNode.textContent.length);
+			}
+		},
 		clear() {
 			this.empty();
 			this.imageList = [];

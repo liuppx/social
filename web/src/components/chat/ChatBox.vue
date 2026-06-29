@@ -61,14 +61,62 @@
 										@click="showPrivateVideo('video')">
 										<el-icon><VideoCamera /></el-icon>
 									</div>
-									<div title="聊天记录" @click="showHistoryBox()">
-										<el-icon><ChatDotRound /></el-icon>
+										<div title="聊天记录" @click="showHistoryBox()">
+											<el-icon><ChatDotRound /></el-icon>
+										</div>
+										<el-dropdown trigger="click" @command="onAiCommand">
+											<el-tooltip content="AI 助手" placement="top">
+												<div class="tool-btn ai-tool" :class="{ disabled: aiBusy }">
+													<el-icon v-if="!aiBusy"><MagicStick /></el-icon>
+													<el-icon v-else class="is-loading"><Loading /></el-icon>
+												</div>
+											</el-tooltip>
+											<template #dropdown>
+												<el-dropdown-menu>
+													<el-dropdown-item command="rewrite">改写输入</el-dropdown-item>
+													<el-dropdown-item command="reply">生成回复</el-dropdown-item>
+													<el-dropdown-item command="summary">总结会话</el-dropdown-item>
+												</el-dropdown-menu>
+											</template>
+										</el-dropdown>
+								</div>
+								<div v-if="aiPanel.visible" class="ai-panel">
+									<div class="ai-panel-head">
+										<div class="ai-panel-title">{{ aiPanel.title }}</div>
+										<div class="ai-panel-meta">
+											<span>{{ aiPanel.provider }}</span>
+											<span v-if="aiPanel.modelUsed">模型</span>
+										</div>
+										<el-button text class="ai-close-btn" @click="closeAiPanel">
+											<el-icon><Close /></el-icon>
+										</el-button>
 									</div>
-							</div>
-							<div class="send-content-area">
-								<ChatInput :ownerId="group.ownerId" ref="chatInputEditor" :group-members="groupMembers"
-									@submit="sendMessage" />
-									<div class="send-btn-area">
+									<div v-if="aiPanel.type === 'summary'" class="ai-summary">
+										<div class="ai-summary-text">{{ aiPanel.summary }}</div>
+										<div v-if="aiPanel.highlights.length" class="ai-group">
+											<div class="ai-group-label">重点</div>
+											<div class="ai-tags">
+												<span v-for="(item, idx) in aiPanel.highlights" :key="'h-' + idx" class="ai-tag">{{ item }}</span>
+											</div>
+										</div>
+										<div v-if="aiPanel.actionItems.length" class="ai-group">
+											<div class="ai-group-label">待办</div>
+											<div class="ai-tags">
+												<span v-for="(item, idx) in aiPanel.actionItems" :key="'a-' + idx" class="ai-tag ai-tag-strong">{{ item }}</span>
+											</div>
+										</div>
+									</div>
+									<div v-else class="ai-suggestions">
+										<button v-for="(item, idx) in aiPanel.suggestions" :key="idx" class="ai-suggestion-btn"
+											@click="applyAiText(item)">
+											{{ item }}
+										</button>
+									</div>
+								</div>
+								<div class="send-content-area">
+									<ChatInput :ownerId="group.ownerId" ref="chatInputEditor" :group-members="groupMembers"
+										@submit="sendMessage" />
+										<div class="send-btn-area">
 										<el-button type="primary" @click="notifySend()">
 											<el-icon><Promotion /></el-icon>
 											<span>发送</span>
@@ -104,6 +152,8 @@ import ChatAtBox from "./ChatAtBox.vue"
 import GroupMemberSelector from "../group/GroupMemberSelector.vue"
 import RtcGroupJoin from "../rtc/RtcGroupJoin.vue"
 import ChatInput from "./ChatInput";
+import { Loading, MagicStick } from '@element-plus/icons-vue';
+import { rewriteMessage, suggestReplies, summarizeChat } from '../../api/ai';
 
 
 export default {
@@ -117,6 +167,8 @@ export default {
 		ChatRecord,
 		ChatHistory,
 		ChatAtBox,
+		Loading,
+		MagicStick,
 		GroupMemberSelector,
 		RtcGroupJoin
 	},
@@ -143,7 +195,19 @@ export default {
 			isSending: false, // 是否正在发消息
 			isInBottom: false, // 滚动条是否在底部
 			newMessageSize: 0, // 滚动条不在底部时新的消息数量
-			maxTmpId: 0 // 最后生成的临时ID
+			maxTmpId: 0, // 最后生成的临时ID
+			aiBusy: false,
+			aiPanel: {
+				visible: false,
+				type: '',
+				title: '',
+				summary: '',
+				suggestions: [],
+				highlights: [],
+				actionItems: [],
+				provider: '',
+				modelUsed: false
+			}
 		}
 	},
 	methods: {
@@ -154,6 +218,167 @@ export default {
 		closeRefBox() {
 			this.$refs.emoBox.close();
 			// this.$refs.atBox.close();
+		},
+		onAiCommand(command) {
+			if (this.aiBusy) {
+				return;
+			}
+			if (command === 'rewrite') {
+				this.rewriteInputWithAi();
+			} else if (command === 'reply') {
+				this.suggestReplyWithAi();
+			} else if (command === 'summary') {
+				this.summarizeWithAi();
+			}
+		},
+		async rewriteInputWithAi() {
+			const text = this.$refs.chatInputEditor.getPlainText();
+			if (!text) {
+				this.$message.warning("请输入要改写的内容");
+				return;
+			}
+			this.aiBusy = true;
+			try {
+				const result = await rewriteMessage({
+					text,
+					style: 'friendly'
+				});
+				this.applyAiText(result.text);
+				this.showAiPanel({
+					type: 'suggestions',
+					title: '已改写，可继续调整后发送',
+					suggestions: [result.text],
+					provider: result.provider,
+					modelUsed: result.modelUsed
+				});
+			} catch (e) {
+				this.$message.error("AI 改写失败");
+			} finally {
+				this.aiBusy = false;
+			}
+		},
+		async suggestReplyWithAi() {
+			const messages = this.buildAiContext(20);
+			if (!messages.length) {
+				this.$message.warning("当前会话还没有可参考的文字消息");
+				return;
+			}
+			this.aiBusy = true;
+			try {
+				const result = await suggestReplies({
+					chatType: this.chat.type,
+					targetId: this.chat.targetId,
+					messages,
+					tone: 'natural'
+				});
+				this.showAiPanel({
+					type: 'suggestions',
+					title: '选择一条回复',
+					suggestions: result.suggestions || [],
+					provider: result.provider,
+					modelUsed: result.modelUsed
+				});
+			} catch (e) {
+				this.$message.error("生成回复建议失败");
+			} finally {
+				this.aiBusy = false;
+			}
+		},
+		async summarizeWithAi() {
+			const messages = this.buildAiContext(60);
+			if (!messages.length) {
+				this.$message.warning("当前会话还没有可总结的文字消息");
+				return;
+			}
+			this.aiBusy = true;
+			try {
+				const result = await summarizeChat({
+					chatType: this.chat.type,
+					targetId: this.chat.targetId,
+					messages
+				});
+				this.showAiPanel({
+					type: 'summary',
+					title: '会话摘要',
+					summary: result.summary,
+					highlights: result.highlights || [],
+					actionItems: result.actionItems || [],
+					provider: result.provider,
+					modelUsed: result.modelUsed
+				});
+			} catch (e) {
+				this.$message.error("生成会话摘要失败");
+			} finally {
+				this.aiBusy = false;
+			}
+		},
+		showAiPanel(panel) {
+			this.aiPanel = Object.assign({
+				visible: true,
+				type: '',
+				title: '',
+				summary: '',
+				suggestions: [],
+				highlights: [],
+				actionItems: [],
+				provider: '',
+				modelUsed: false
+			}, panel, { visible: true });
+		},
+		closeAiPanel() {
+			this.aiPanel.visible = false;
+		},
+		applyAiText(text) {
+			this.$refs.chatInputEditor.setText(text || '');
+			this.$nextTick(() => this.$refs.chatInputEditor.focus());
+		},
+		buildAiContext(limit) {
+			if (!this.chat || !this.chat.messages) {
+				return [];
+			}
+			return this.chat.messages
+				.filter(msg => this.shouldUseForAi(msg))
+				.slice(-limit)
+				.map(msg => this.toAiContextMessage(msg));
+		},
+		shouldUseForAi(msg) {
+			if (!msg || !msg.content) {
+				return false;
+			}
+			if (msg.type === this.$enums.MESSAGE_TYPE.TIP_TIME || msg.type === this.$enums.MESSAGE_TYPE.LOADING) {
+				return false;
+			}
+			return this.$msgType.isNormal(msg.type) || this.$msgType.isAction(msg.type) ||
+				msg.type === this.$enums.MESSAGE_TYPE.TIP_TEXT;
+		},
+		toAiContextMessage(msg) {
+			return {
+				role: msg.selfSend ? 'user' : 'assistant',
+				nickName: this.showName(msg),
+				content: this.aiMessageContent(msg),
+				type: msg.type,
+				selfSend: msg.selfSend,
+				sendTime: msg.sendTime
+			}
+		},
+		aiMessageContent(msg) {
+			if (msg.type === this.$enums.MESSAGE_TYPE.TEXT || msg.type === this.$enums.MESSAGE_TYPE.TIP_TEXT ||
+				this.$msgType.isAction(msg.type)) {
+				return msg.content;
+			}
+			if (msg.type === this.$enums.MESSAGE_TYPE.IMAGE) {
+				return "[图片]";
+			}
+			if (msg.type === this.$enums.MESSAGE_TYPE.FILE) {
+				return "[文件]";
+			}
+			if (msg.type === this.$enums.MESSAGE_TYPE.AUDIO) {
+				return "[语音]";
+			}
+			if (msg.type === this.$enums.MESSAGE_TYPE.VIDEO) {
+				return "[视频]";
+			}
+			return msg.content;
 		},
 		onCall(type) {
 			if (type == this.$enums.MESSAGE_TYPE.ACT_RT_VOICE) {
@@ -841,6 +1066,7 @@ export default {
 					this.isReceipt = false;
 					// 清空消息临时id
 					this.maxTmpId = 0;
+					this.closeAiPanel();
 					// 更新placeholder
 					this.refreshPlaceHolder();
 				}
@@ -940,6 +1166,7 @@ export default {
 		.yeying-chat-footer {
 			display: flex;
 			flex-direction: column;
+			position: relative;
 			padding: 0;
 
 			.chat-tool-bar {
@@ -974,6 +1201,127 @@ export default {
 				>div:hover {
 					color: #333;
 				}
+
+				:deep(.el-dropdown) {
+					margin-right: 8px;
+				}
+
+				.ai-tool {
+					display: flex;
+					align-items: center;
+					justify-content: center;
+					width: 30px;
+					height: 30px;
+					border-radius: 2px;
+					color: var(--yeying-color-primary);
+
+					&.disabled {
+						cursor: wait;
+						color: #999;
+					}
+				}
+			}
+
+			.ai-panel {
+				position: absolute;
+				left: 12px;
+				right: 12px;
+				bottom: 58px;
+				z-index: 20;
+				padding: 10px 12px;
+				border: 1px solid #dcdfe6;
+				border-radius: 6px;
+				background: #fff;
+				box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+				text-align: left;
+			}
+
+			.ai-panel-head {
+				display: flex;
+				align-items: center;
+				gap: 8px;
+				margin-bottom: 8px;
+			}
+
+			.ai-panel-title {
+				font-size: var(--yeying-font-size);
+				font-weight: 600;
+				color: #303133;
+			}
+
+			.ai-panel-meta {
+				display: flex;
+				gap: 6px;
+				margin-left: auto;
+				font-size: 12px;
+				color: #909399;
+			}
+
+			.ai-close-btn {
+				width: 24px;
+				height: 24px;
+				padding: 0;
+				color: #909399;
+			}
+
+			.ai-suggestions {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 8px;
+			}
+
+			.ai-suggestion-btn {
+				max-width: 100%;
+				padding: 6px 10px;
+				border: 1px solid #dcdfe6;
+				border-radius: 4px;
+				background: #f8f9fb;
+				color: #303133;
+				line-height: 18px;
+				text-align: left;
+				cursor: pointer;
+			}
+
+			.ai-suggestion-btn:hover {
+				border-color: var(--yeying-color-primary);
+				color: var(--yeying-color-primary);
+			}
+
+			.ai-summary-text {
+				font-size: var(--yeying-font-size);
+				line-height: 20px;
+				color: #303133;
+			}
+
+			.ai-group {
+				margin-top: 8px;
+			}
+
+			.ai-group-label {
+				margin-bottom: 4px;
+				font-size: 12px;
+				color: #909399;
+			}
+
+			.ai-tags {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 6px;
+			}
+
+			.ai-tag {
+				max-width: 100%;
+				padding: 4px 8px;
+				border-radius: 4px;
+				background: #f4f5f6;
+				color: #606266;
+				font-size: 12px;
+				line-height: 18px;
+			}
+
+			.ai-tag-strong {
+				background: var(--yeying-color-primary-light-9);
+				color: var(--yeying-color-primary);
 			}
 
 			.send-content-area {

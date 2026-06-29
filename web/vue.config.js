@@ -5,6 +5,20 @@ const { ElementPlusResolver } = require('unplugin-vue-components/resolvers')
 module.exports = {
 	devServer: {
 		port: 8082,
+		client: {
+			overlay: {
+				errors: true,
+				warnings: false,
+				runtimeErrors: (error) => {
+					const message = (error && error.message) ? String(error.message) : ''
+					const stack = (error && error.stack) ? String(error.stack) : ''
+					// 忽略浏览器钱包扩展注入脚本抛出的异常，避免污染本地调试 overlay
+					const isWalletExtensionError = /Failed to connect to MetaMask/i.test(message) ||
+						(/chrome-extension:\/\//i.test(stack) && /metamask|wallet|inpage/i.test(stack))
+					return !isWalletExtensionError
+				}
+			}
+		},
 		proxy: {
 			'/api': {
 				target: 'http://127.0.0.1:8888',
