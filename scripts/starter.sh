@@ -10,6 +10,7 @@ PID_DIR="${ROOT_DIR}/pids"
 
 JAVA_BIN="${JAVA_BIN:-java}"
 JAVA_OPTS="${JAVA_OPTS:-}"
+RUNTIME_ENV="${ROOT_DIR}/config/runtime.env"
 
 ACTION="${1:-start}"
 
@@ -21,6 +22,16 @@ SERVICES=(
 )
 
 mkdir -p "${LOG_DIR}" "${PID_DIR}"
+
+if [[ -f "${RUNTIME_ENV}" ]]; then
+  # shellcheck disable=SC1090
+  source "${RUNTIME_ENV}"
+fi
+
+if ! command -v "${JAVA_BIN}" >/dev/null 2>&1; then
+  echo "ERROR: Java executable not found: ${JAVA_BIN}"
+  exit 1
+fi
 
 timestamp() {
   date +"%Y-%m-%d %H:%M:%S"
@@ -65,8 +76,15 @@ start_service() {
   fi
 
   local log_file="${LOG_DIR}/${name}.log"
+  local config_dir="${ROOT_DIR}/config/${name}"
+  local config_arg=()
+  if [[ -d "${config_dir}" ]]; then
+    config_arg=("--spring.config.additional-location=file:${config_dir}/")
+  fi
   log "starting ${name} ..."
-  nohup "${JAVA_BIN}" ${JAVA_OPTS} -jar "${jar}" >"${log_file}" 2>&1 &
+  # JAVA_OPTS intentionally supports the conventional space-separated JVM option string.
+  # shellcheck disable=SC2086
+  nohup "${JAVA_BIN}" ${JAVA_OPTS} -jar "${jar}" "${config_arg[@]}" >"${log_file}" 2>&1 &
   local pid=$!
   echo "${pid}" >"$(pid_file "${name}")"
   sleep 1

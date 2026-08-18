@@ -1,0 +1,22 @@
+{
+  "schema_version": "1.0",
+  "suite": "smoke",
+  "cases": [
+    {
+      "id": "SMOKE-READY-001",
+      "name": "service processes and HTTP listeners are ready",
+      "purpose": "Verify that the packaged Social services are ready after startup.",
+      "preconditions": [
+        "Run scripts/starter.sh.",
+        "All configured service ports are available locally."
+      ],
+      "steps": [
+        "Run scripts/health-check.sh --level readiness.",
+        "Verify platform, rtc, and web3-identity accept HTTP requests."
+      ],
+      "expected_result": "The readiness check exits with code 0.",
+      "cleanup": "None; the check is read-only.",
+      "owner": "platform"
+    }
+  ]
+}

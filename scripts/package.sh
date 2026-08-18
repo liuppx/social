@@ -8,6 +8,11 @@ PROJECT_NAME="$(basename "${ROOT_DIR}")"
 OUTPUT_DIR="${ROOT_DIR}/output"
 TAG_ARG="${1:-}"
 
+if [[ "$#" -gt 1 ]]; then
+  echo "Usage: $0 [v<major>.<minor>.<patch>]"
+  exit 2
+fi
+
 ORIGINAL_REF="$(git -C "${ROOT_DIR}" rev-parse --abbrev-ref HEAD)"
 ORIGINAL_COMMIT="$(git -C "${ROOT_DIR}" rev-parse HEAD)"
 
@@ -34,7 +39,9 @@ require_cmd() {
 require_cmd git
 require_cmd tar
 require_cmd mvn
-require_cmd npm
+if [[ -d "${ROOT_DIR}/web" ]]; then
+  require_cmd npm
+fi
 
 if ! git -C "${ROOT_DIR}" remote get-url origin >/dev/null 2>&1; then
   echo "ERROR: git remote 'origin' not configured."
@@ -127,11 +134,11 @@ mkdir -p "${STAGE_DIR}/bin" "${STAGE_DIR}/config" "${STAGE_DIR}/web" "${STAGE_DI
 
 for module in platform server rtc web3-identity; do
   jar_path="${ROOT_DIR}/${module}/target/${module}.jar"
-  if [[ -f "${jar_path}" ]]; then
-    cp "${jar_path}" "${STAGE_DIR}/bin/"
-  else
-    log "WARN: ${jar_path} not found, skip"
+  if [[ ! -f "${jar_path}" ]]; then
+    echo "ERROR: required artifact not found: ${jar_path}"
+    exit 1
   fi
+  cp "${jar_path}" "${STAGE_DIR}/bin/"
 done
 
 for module in platform server rtc web3-identity; do
@@ -142,12 +149,29 @@ for module in platform server rtc web3-identity; do
   fi
 done
 
-if [[ -d "${ROOT_DIR}/web/dist" ]]; then
+if [[ -d "${ROOT_DIR}/web" ]]; then
+  if [[ ! -d "${ROOT_DIR}/web/dist" ]]; then
+    echo "ERROR: frontend build output not found: ${ROOT_DIR}/web/dist"
+    exit 1
+  fi
   cp -R "${ROOT_DIR}/web/dist" "${STAGE_DIR}/web/"
 fi
 
-cp "${ROOT_DIR}/scripts/starter.sh" "${STAGE_DIR}/scripts/starter.sh"
-chmod +x "${STAGE_DIR}/scripts/starter.sh"
+for script in starter.sh health-check.sh test.sh; do
+  script_path="${ROOT_DIR}/scripts/${script}"
+  if [[ ! -f "${script_path}" ]]; then
+    echo "ERROR: required package script not found: ${script_path}"
+    exit 1
+  fi
+  cp "${script_path}" "${STAGE_DIR}/scripts/${script}"
+  chmod +x "${STAGE_DIR}/scripts/${script}"
+done
+
+if [[ ! -d "${ROOT_DIR}/tests/smoke" ]]; then
+  echo "ERROR: smoke test resources not found: ${ROOT_DIR}/tests/smoke"
+  exit 1
+fi
+cp -R "${ROOT_DIR}/tests" "${STAGE_DIR}/"
 
 cat > "${STAGE_DIR}/config/runtime.env.example" <<'EOF'
 # JVM settings
