@@ -30,6 +30,11 @@ public class User {
     private String userName;
 
     /**
+     * 账户邮箱。邮箱密码登录的唯一标识，不向普通用户资料页面公开。
+     */
+    private String email;
+
+    /**
      * 用户昵称
      */
     private String nickName;

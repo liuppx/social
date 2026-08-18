@@ -53,7 +53,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     @Override
     public LoginVO login(LoginDTO dto) {
-        User user = this.findUserByUserName(dto.getUserName());
+        String email = dto.getEmail().trim().toLowerCase();
+        User user = this.getOne(Wrappers.<User>lambdaQuery().eq(User::getEmail, email));
         if (Objects.isNull(user)) {
             throw new GlobalException("用户不存在");
         }
@@ -97,24 +98,24 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     @Override
     public void register(RegisterDTO dto) {
-        // 昵称默认跟用户名保持一致
+        String email = dto.getEmail().trim().toLowerCase();
+        // 昵称默认使用邮箱前缀，用户名仅作为兼容字段由服务端生成。
         if(StrUtil.isEmpty(dto.getNickName())){
-            dto.setUserName(dto.getUserName());
+            dto.setNickName(email.substring(0, email.indexOf('@')));
         }
-        User user = this.findUserByUserName(dto.getUserName());
-        if(!dto.getUserName().equals(sensitiveFilterUtil.filter(dto.getUserName()))){
-            throw new GlobalException("用户名包含敏感字符");
-        }
+        User user = this.getOne(Wrappers.<User>lambdaQuery().eq(User::getEmail, email));
         if(!dto.getNickName().equals(sensitiveFilterUtil.filter(dto.getNickName()))){
             throw new GlobalException("昵称包含敏感字符");
         }
         if (!Objects.isNull(user)) {
-            throw new GlobalException(ResultCode.USERNAME_ALREADY_REGISTER);
+            throw new GlobalException("该邮箱已注册");
         }
         user = BeanUtils.copyProperties(dto, User.class);
+        user.setEmail(email);
+        user.setUserName(generateUniqueUserName(email));
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         this.save(user);
-        log.info("注册用户，用户id:{},用户名:{},昵称:{}", user.getId(), dto.getUserName(), dto.getNickName());
+        log.info("注册用户，用户id:{},邮箱:{},昵称:{}", user.getId(), email, dto.getNickName());
     }
 
     @Override
@@ -134,6 +135,20 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         LambdaQueryWrapper<User> queryWrapper = Wrappers.lambdaQuery();
         queryWrapper.eq(User::getUserName, username);
         return this.getOne(queryWrapper);
+    }
+
+    private String generateUniqueUserName(String email) {
+        String prefix = email.substring(0, email.indexOf('@')).replaceAll("[^a-zA-Z0-9_]", "_");
+        if (prefix.isBlank()) {
+            prefix = "user";
+        }
+        prefix = prefix.length() > 14 ? prefix.substring(0, 14) : prefix;
+        String candidate = prefix;
+        int suffix = 1;
+        while (findUserByUserName(candidate) != null) {
+            candidate = prefix + "_" + suffix++;
+        }
+        return candidate;
     }
 
     @Transactional(rollbackFor = Exception.class)

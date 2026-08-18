@@ -9,7 +9,7 @@
   },
   "dependencies": {
     "@element-plus/icons-vue": "^2.3.2",
-    "@yeying-community/web3-bs": "1.0.8",
+    "@yeying-community/web3-bs": "^1.0.18",
     "axios": "1.15.2",
     "core-js": "3.49.0",
     "element-plus": "^2.11.7",

@@ -29,6 +29,8 @@ public class User {
      */
     private String userName;
 
+    private String email;
+
     /**
      * 用户昵称
      */

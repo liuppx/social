@@ -39,3 +39,7 @@ web3:
     audience: did:web:social.yeying.pub
     resource: profile
     action: read
+  passport:
+    nodeBaseUrl: ${PASSPORT_NODE_BASE_URL:}
+    appId: ${PASSPORT_APP_ID:}
+    audience: ${PASSPORT_AUDIENCE:}

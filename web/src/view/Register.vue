@@ -8,9 +8,8 @@
 				<img class="logo" src="../../public/logo.png" />
 				<div>欢迎成为Yeying Social的用户</div>
 			</div>
-			<el-form-item label="用户名" prop="userName">
-				<el-input type="text" v-model="registerForm.userName" autocomplete="off" placeholder="用户名(登录使用)"
-					maxlength="20"></el-input>
+			<el-form-item label="邮箱" prop="email">
+				<el-input type="email" v-model="registerForm.email" autocomplete="email" placeholder="邮箱(用于辅助登录)"></el-input>
 			</el-form-item>
 			<el-form-item label="昵称" prop="nickName">
 				<el-input type="text" v-model="registerForm.nickName" autocomplete="off" placeholder="昵称"
@@ -44,10 +43,11 @@ export default {
 		Icp
 	},
 	data() {
-		var checkUserName = (rule, value, callback) => {
+		var checkEmail = (rule, value, callback) => {
 			if (!value) {
-				return callback(new Error('请输入用户名'));
+				return callback(new Error('请输入邮箱'));
 			}
+			if (!/^\S+@\S+\.\S+$/.test(value)) return callback(new Error('邮箱格式不正确'))
 			callback();
 		};
 		var checkNickName = (rule, value, callback) => {
@@ -76,14 +76,14 @@ export default {
 
 		return {
 			registerForm: {
-				userName: '',
+				email: '',
 				nickName: '',
 				password: '',
 				confirmPassword: ''
 			},
 			rules: {
-				userName: [{
-					validator: checkUserName,
+				email: [{
+					validator: checkEmail,
 					trigger: 'blur'
 				}],
 				nickName: [{

@@ -21,4 +21,12 @@ public class Web3ChallengeVO {
 
     @Schema(description = "chain id")
     private String chainId;
+
+    private String appId;
+
+    private String audience;
+
+    private java.util.List<String> scope;
+
+    private String passportEndpoint;
 }

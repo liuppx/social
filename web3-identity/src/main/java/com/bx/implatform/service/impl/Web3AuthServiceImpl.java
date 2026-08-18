@@ -14,9 +14,11 @@ import com.bx.implatform.dto.WalletUnlinkDTO;
 import com.bx.implatform.dto.Web3ChallengeDTO;
 import com.bx.implatform.dto.Web3VerifyDTO;
 import com.bx.implatform.entity.User;
+import com.bx.implatform.entity.PassportIdentity;
 import com.bx.implatform.entity.Wallet;
 import com.bx.implatform.exception.GlobalException;
 import com.bx.implatform.mapper.UserMapper;
+import com.bx.implatform.mapper.PassportIdentityMapper;
 import com.bx.implatform.service.LoginTokenService;
 import com.bx.implatform.service.WalletService;
 import com.bx.implatform.service.Web3AuthService;
@@ -35,11 +37,21 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -55,6 +67,9 @@ public class Web3AuthServiceImpl implements Web3AuthService {
     private final UserMapper userMapper;
     private final WalletService walletService;
     private final PasswordEncoder passwordEncoder;
+    private final PassportIdentityMapper passportIdentityMapper;
+
+    private static final List<String> COMMUNITY_SCOPES = List.of("identity.basic", "identity.wallet", "identity.email");
 
     @Override
     public SiweNonceVO issueNonce(SiweNonceDTO dto) {
@@ -79,13 +94,30 @@ public class Web3AuthServiceImpl implements Web3AuthService {
         long expiresAt = issuedAt + web3Properties.getNonceExpireIn() * 1000L;
         String challenge = buildChallenge(address, nonce, issuedAt, chainId);
         String key = buildChallengeKey(address);
-        redisTemplate.opsForValue().set(key, challenge, web3Properties.getNonceExpireIn(), TimeUnit.SECONDS);
+        List<String> scopes = normalizeScopes(dto.getScope());
+        String appId = requiredPassportConfig(web3Properties.getPassportAppId(), "通行证应用 ID 未配置");
+        String audience = requiredPassportConfig(web3Properties.getPassportAudience(), "通行证访问方未配置");
+        String endpoint = requiredPassportConfig(web3Properties.getPassportNodeBaseUrl(), "通行证服务未配置");
+        if (dto.getAppId() != null && !dto.getAppId().isBlank() && !appId.equals(dto.getAppId().trim())) {
+            throw new GlobalException("通行证应用 ID 不匹配");
+        }
+        Map<String, Object> loginRequest = new HashMap<>();
+        loginRequest.put("challenge", challenge);
+        loginRequest.put("nonce", nonce);
+        loginRequest.put("scope", scopes);
+        loginRequest.put("appId", appId);
+        loginRequest.put("audience", audience);
+        redisTemplate.opsForValue().set(key, loginRequest, web3Properties.getNonceExpireIn(), TimeUnit.SECONDS);
         Web3ChallengeVO vo = new Web3ChallengeVO();
         vo.setChallenge(challenge);
         vo.setNonce(nonce);
         vo.setIssuedAt(issuedAt);
         vo.setExpiresAt(expiresAt);
         vo.setChainId(chainId);
+        vo.setAppId(appId);
+        vo.setAudience(audience);
+        vo.setScope(scopes);
+        vo.setPassportEndpoint(endpoint.replaceAll("/+$", ""));
         return vo;
     }
 
@@ -105,15 +137,18 @@ public class Web3AuthServiceImpl implements Web3AuthService {
         String chainId = normalizeChainId(null);
         String key = buildChallengeKey(address);
         Object storedChallenge = redisTemplate.opsForValue().get(key);
-        if (storedChallenge == null) {
+        if (!(storedChallenge instanceof Map)) {
             throw new GlobalException("挑战已过期，请重新获取");
         }
-        String challenge = storedChallenge.toString();
+        Map<String, Object> loginRequest = (Map<String, Object>) storedChallenge;
+        String challenge = String.valueOf(loginRequest.get("challenge"));
         if (!Web3SignatureVerifier.verifyPersonalSign(challenge, dto.getSignature(), address)) {
             throw new GlobalException("签名校验失败");
         }
+        Map<String, Object> assertion = validatePassportAssertion(dto, address, loginRequest);
         redisTemplate.delete(key);
-        User user = resolveUserByWallet(address, chainId);
+        User user = resolvePassportUser(assertion, address, chainId);
+        applyPassportEmail(user, assertion);
         Integer terminal = dto.getTerminal() == null ? 0 : dto.getTerminal();
         LoginVO login = loginTokenService.createToken(user, terminal);
         Web3VerifyVO vo = new Web3VerifyVO();
@@ -257,6 +292,96 @@ public class Web3AuthServiceImpl implements Web3AuthService {
         }
         return user;
     }
+
+    private List<String> normalizeScopes(List<String> requested) {
+        if (requested == null || requested.isEmpty()) {
+            return COMMUNITY_SCOPES;
+        }
+        List<String> scopes = new ArrayList<>();
+        for (String value : requested) {
+            if (value != null && !value.isBlank() && !scopes.contains(value.trim())) scopes.add(value.trim());
+        }
+        if (!scopes.containsAll(COMMUNITY_SCOPES)) {
+            throw new GlobalException("社区登录必须请求基础身份、钱包和已验证邮箱");
+        }
+        return scopes;
+    }
+
+    private Map<String, Object> validatePassportAssertion(Web3VerifyDTO dto, String address, Map<String, Object> request) {
+        if (dto.getPassportAssertion() == null || dto.getPassportAssertion().isBlank() || dto.getWalletProof() == null) {
+            throw new GlobalException("需要夜莺通行证钱包身份声明");
+        }
+        Map<String, Object> result = passportClaims(dto.getPassportAssertion());
+        if (!Boolean.TRUE.equals(result.get("active"))) throw new GlobalException("夜莺通行证身份声明无效");
+        Map<String, Object> claims = asMap(result.get("claims"));
+        List<String> requiredScopes = (List<String>) request.get("scope");
+        List<String> actualScopes = stringList(claims.get("scope"));
+        if (string(claims.get("subjectId")).isBlank() || !address.equalsIgnoreCase(string(claims.get("walletAddress"))) ||
+            !string(request.get("nonce")).equals(string(claims.get("nonce"))) ||
+            !string(request.get("appId")).equals(string(claims.get("appId"))) ||
+            !string(request.get("audience")).equals(string(claims.get("aud"))) || !actualScopes.containsAll(requiredScopes) ||
+            !Boolean.parseBoolean(string(claims.get("emailVerified"))) || string(claims.get("email")).isBlank()) {
+            throw new GlobalException("需要已验证的夜莺通行证邮箱");
+        }
+        if (!address.equalsIgnoreCase(string(dto.getWalletProof().get("address"))) ||
+            !string(request.get("nonce")).equals(string(dto.getWalletProof().get("nonce"))) ||
+            !string(request.get("appId")).equals(string(dto.getWalletProof().get("appId"))) ||
+            !string(request.get("audience")).equals(string(dto.getWalletProof().get("audience"))) ||
+            !stringList(dto.getWalletProof().get("scopes")).containsAll(requiredScopes)) {
+            throw new GlobalException("夜莺通行证钱包证明无效");
+        }
+        return result;
+    }
+
+    private User resolvePassportUser(Map<String, Object> assertion, String address, String chainId) {
+        Map<String, Object> claims = asMap(assertion.get("claims"));
+        String subjectId = string(claims.get("subjectId"));
+        PassportIdentity identity = passportIdentityMapper.selectOne(new LambdaQueryWrapper<PassportIdentity>()
+            .eq(PassportIdentity::getSubjectId, subjectId));
+        User user = identity == null ? null : userMapper.selectById(identity.getUserId());
+        if (user == null) {
+            user = resolveUserByWallet(address, chainId);
+            PassportIdentity existing = passportIdentityMapper.selectOne(new LambdaQueryWrapper<PassportIdentity>()
+                .eq(PassportIdentity::getUserId, user.getId()));
+            if (existing != null && !subjectId.equals(existing.getSubjectId())) {
+                throw new GlobalException("该社区账号已关联其他夜莺通行证");
+            }
+            if (existing == null) {
+                PassportIdentity created = new PassportIdentity();
+                created.setSubjectId(subjectId);
+                created.setUserId(user.getId());
+                created.setWalletAddress(address);
+                passportIdentityMapper.insert(created);
+            }
+        }
+        if (Boolean.TRUE.equals(user.getIsBanned())) throw new GlobalException("该社区账号已被禁用，无法登录");
+        return user;
+    }
+
+    private Map<String, Object> passportClaims(String assertion) {
+        String endpoint = requiredPassportConfig(web3Properties.getPassportNodeBaseUrl(), "通行证服务未配置").replaceAll("/+$", "");
+        HttpHeaders headers = new HttpHeaders(); headers.setContentType(MediaType.APPLICATION_JSON);
+        try {
+            ResponseEntity<Map> response = new RestTemplate().exchange(endpoint + "/api/v1/public/auth/passport/assertions/introspect", HttpMethod.POST,
+                new HttpEntity<>(Map.of("assertion", assertion), headers), Map.class);
+            Map<String, Object> envelope = response.getBody();
+            if (envelope == null || !(envelope.get("code") instanceof Number) || ((Number) envelope.get("code")).intValue() != 0) throw new GlobalException("夜莺通行证身份声明无效");
+            return asMap(envelope.get("data"));
+        } catch (Exception exception) { if (exception instanceof GlobalException) throw (GlobalException) exception; throw new GlobalException("无法校验夜莺通行证身份声明"); }
+    }
+
+    private void applyPassportEmail(User user, Map<String, Object> result) {
+        Map<String, Object> claims = asMap(result.get("claims")); String email = string(claims.get("email")).toLowerCase();
+        if (email.isBlank()) return;
+        User existing = userMapper.selectOne(new LambdaQueryWrapper<User>().eq(User::getEmail, email));
+        if (existing != null && !existing.getId().equals(user.getId())) throw new GlobalException("该通行证邮箱已关联其他社区账号");
+        User update = new User(); update.setId(user.getId()); update.setEmail(email); userMapper.updateById(update);
+    }
+
+    @SuppressWarnings("unchecked") private Map<String, Object> asMap(Object value) { return value instanceof Map ? (Map<String, Object>) value : new HashMap<>(); }
+    private List<String> stringList(Object value) { return value instanceof List ? ((List<?>) value).stream().map(this::string).toList() : List.of(); }
+    private String string(Object value) { return value == null ? "" : String.valueOf(value).trim(); }
+    private String requiredPassportConfig(String value, String message) { if (value == null || value.isBlank()) throw new GlobalException(message); return value.trim(); }
 
     private String buildNonceKey(String address, String chainId) {
         return StrUtil.join(":", RedisKey.IM_AUTH_SIWE_NONCE, chainId, address);

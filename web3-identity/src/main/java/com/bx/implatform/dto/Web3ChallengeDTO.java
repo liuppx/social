@@ -16,4 +16,10 @@ public class Web3ChallengeDTO {
 
     @Schema(description = "chain id (optional)")
     private String chainId;
+
+    @Schema(description = "Passport application id")
+    private String appId;
+
+    @Schema(description = "Requested Passport scopes")
+    private java.util.List<String> scope;
 }

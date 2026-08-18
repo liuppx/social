@@ -31,4 +31,13 @@ public class Web3Properties {
 
     @Value("${web3.ucan.action:read}")
     private String ucanAction;
+
+    @Value("${web3.passport.nodeBaseUrl:}")
+    private String passportNodeBaseUrl;
+
+    @Value("${web3.passport.appId:}")
+    private String passportAppId;
+
+    @Value("${web3.passport.audience:}")
+    private String passportAudience;
 }

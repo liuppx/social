@@ -7,16 +7,11 @@ const loadWeb3Lib = async () => {
 	return web3LibPromise
 }
 
-const DEFAULT_CAPABILITIES = [{ resource: 'profile', action: 'read' }]
 const DEFAULT_PROVIDER_TIMEOUT = 3000
 
 const resolveAuthBaseUrl = () => {
 	const base = process.env.VUE_APP_WEB3_BASE_API || ''
 	return `${base}/api/v1/public/auth`
-}
-
-const resolveAudience = () => {
-	return process.env.VUE_APP_WEB3_AUDIENCE || (typeof window !== 'undefined' ? `did:web:${window.location.host}` : '')
 }
 
 const extractRefreshToken = (payload) => {
@@ -78,44 +73,39 @@ const shouldFallbackProvider = (error, provider, preferYeYing, isYeYingProviderF
 
 const loginWithProvider = async (provider, options = {}) => {
 	const {
-		loginWithChallenge,
-		createUcanSession,
-		getOrCreateUcanRoot,
-		createInvocationUcan
+		requestAccounts,
+		signMessage,
+		requestPassportAssertion
 	} = await loadWeb3Lib()
 
 	const baseUrl = options.baseUrl || resolveAuthBaseUrl()
-	const login = await loginWithChallenge({
-		provider,
-		baseUrl,
-		storeToken: false
+	const accounts = await requestAccounts({ provider })
+	const address = accounts[0]
+	if (!address) throw new Error('未获取到钱包账户')
+	const challengeResponse = await fetch(`${baseUrl}/challenge`, {
+		method: 'POST', headers: { 'Content-Type': 'application/json' },
+		body: JSON.stringify({ address })
 	})
-
-	const refreshToken = extractRefreshToken(login.response)
-
-	const capabilities = options.capabilities || DEFAULT_CAPABILITIES
-	const session = await createUcanSession({ provider })
-	const root = await getOrCreateUcanRoot({
-		provider,
-		session,
-		capabilities
+	const challengePayload = await challengeResponse.json()
+	const loginRequest = challengePayload && challengePayload.data
+	if (!challengeResponse.ok || !loginRequest || !loginRequest.challenge) throw new Error((challengePayload && challengePayload.message) || '无法创建钱包登录请求')
+	const signature = await signMessage({ provider, address, message: loginRequest.challenge })
+	const passportLogin = await requestPassportAssertion({
+		provider, appId: loginRequest.appId, audience: loginRequest.audience, nonce: loginRequest.nonce,
+		scopes: loginRequest.scope, passportEndpoint: loginRequest.passportEndpoint, ensureConnected: false
 	})
-
-	const audience = options.audience || resolveAudience()
-	const ucan = await createInvocationUcan({
-		issuer: session,
-		audience,
-		capabilities,
-		proofs: [root]
+	const verifyResponse = await fetch(`${baseUrl}/verify`, {
+		method: 'POST', headers: { 'Content-Type': 'application/json' },
+		body: JSON.stringify({ address, signature, nonce: loginRequest.nonce, passportAssertion: passportLogin.passportAssertion, walletProof: passportLogin.walletProof })
 	})
+	const verifyPayload = await verifyResponse.json()
+	const result = verifyPayload && verifyPayload.data
+	if (!verifyResponse.ok || !result || !result.token) throw new Error((verifyPayload && verifyPayload.message) || '钱包登录失败')
 
 	return {
-		accessToken: login.token,
-		refreshToken,
-		address: login.address,
-		ucan,
-		ucanSession: session,
-		ucanRoot: root
+		accessToken: result.token,
+		refreshToken: extractRefreshToken(result),
+		address: result.address || address
 	}
 }
 

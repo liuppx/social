@@ -20,4 +20,10 @@ public class Web3VerifyDTO {
 
     @Schema(description = "terminal type (0:web 1:app 2:pc)")
     private Integer terminal;
+
+    private String nonce;
+
+    private String passportAssertion;
+
+    private java.util.Map<String, Object> walletProof;
 }
