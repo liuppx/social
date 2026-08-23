@@ -224,21 +224,22 @@ export default {
 
 <style lang="scss">
 .chat-message-item {
-	padding: 3px 10px;
-	border-radius: 10px;
+	padding: 8px 18px;
+	border-radius: 8px;
 
 	.message-tip {
-		line-height: 50px;
+		line-height: 34px;
 		font-size: var(--yeying-font-size-small);
 		color: var(--yeying-text-color-light);
+		text-align: center;
 	}
 
 	.message-normal {
 		position: relative;
 		font-size: 0;
-		padding-left: 48px;
-		min-height: 50px;
-		margin-top: 10px;
+		padding-left: 50px;
+		min-height: 44px;
+		margin-top: 8px;
 
 		.head-image {
 			position: absolute;
@@ -255,8 +256,9 @@ export default {
 				display: flex;
 				flex-wrap: nowrap;
 				color: var(--yeying-text-color-light);
-				font-size: var(--yeying-font-size);
-				line-height: 20px;
+				font-size: var(--yeying-font-size-smaller);
+				line-height: 18px;
+				margin-bottom: 4px;
 
 				span {
 					margin-right: 12px;
@@ -264,31 +266,36 @@ export default {
 			}
 
 			.message-bottom {
-				display: inline-block;
-				padding-right: 300px;
-				padding-left: 5px;
+				display: inline-flex;
+				flex-direction: column;
+				align-items: flex-start;
+				max-width: min(68%, 620px);
+				padding: 0;
+				vertical-align: top;
 
 
 				.message-content-wrapper {
 					position: relative;
 					display: flex;
-					align-items: flex-end;
+					align-items: center;
+					max-width: 100%;
 
 					.sending {
-						width: 25px;
-						height: 25px;
+						width: 22px;
+						height: 22px;
+						margin-left: 8px;
 
 						.circular {
-							width: 25px;
-							height: 25px;
+							width: 22px;
+							height: 22px;
 						}
 					}
 
 						.send-fail {
 							color: #e45050;
-							font-size: 30px;
+							font-size: 22px;
 							cursor: pointer;
-							margin: 0 5px;
+							margin: 0 8px;
 
 							.el-icon {
 								font-size: inherit;
@@ -300,23 +307,27 @@ export default {
 					flex: 1;
 					display: inline-block;
 					position: relative;
-					line-height: 26px;
-					padding: 6px 10px;
+					max-width: 100%;
+					line-height: 24px;
+					padding: 8px 12px;
 					background-color: var(--yeying-background);
-					border-radius: 10px;
+					border: 1px solid #edf0f5;
+					border-radius: 8px;
 					font-size: var(--yeying-font-size);
 					text-align: left;
 					white-space: pre-wrap;
 					word-break: break-word;
+					box-sizing: border-box;
 
 				}
 
 				.message-image {
 					border-radius: 8px;
-					border: 2px solid var(--yeying-color-primary-light-9);
+					border: 1px solid #edf0f5;
 					overflow: hidden;
 					cursor: pointer;
 					background: var(--yeying-background);
+					box-shadow: var(--yeying-box-shadow-light);
 				}
 
 				.message-file {
@@ -332,13 +343,18 @@ export default {
 						display: flex;
 						flex-wrap: nowrap;
 						align-items: center;
-						min-height: 60px;
-						box-shadow: var(--yeying-box-shadow-light);
-						border-radius: 4px;
-						padding: 10px 15px;
+						min-height: 64px;
+						min-width: 260px;
+						max-width: 340px;
+						border: 1px solid #edf0f5;
+						border-radius: 8px;
+						padding: 12px 14px;
+						background: #ffffff;
+						box-sizing: border-box;
 
 						.chat-file-info {
 							flex: 1;
+							min-width: 0;
 							height: 100%;
 							text-align: left;
 							font-size: 14px;
@@ -346,12 +362,12 @@ export default {
 
 							.chat-file-name {
 								display: inline-block;
-								min-width: 160px;
 								max-width: 220px;
 								font-size: 14px;
 								margin-bottom: 4px;
-								white-space: pre-wrap;
-								word-break: break-all;
+								white-space: nowrap;
+								text-overflow: ellipsis;
+								overflow: hidden;
 							}
 
 							.chat-file-size {
@@ -361,8 +377,15 @@ export default {
 						}
 
 							.chat-file-icon {
-								font-size: 44px;
-								color: #d42e07;
+								display: flex;
+								align-items: center;
+								justify-content: center;
+								width: 38px;
+								height: 38px;
+								border-radius: 8px;
+								background: var(--yeying-color-primary-light-9);
+								font-size: 24px;
+								color: var(--yeying-color-primary);
 
 								.el-icon {
 									font-size: inherit;
@@ -371,10 +394,10 @@ export default {
 					}
 
 					.send-fail {
-						color: #e60c0c;
-						font-size: 30px;
+						color: #e45050;
+						font-size: 22px;
 						cursor: pointer;
-						margin: 0 20px;
+						margin: 0 8px;
 					}
 
 				}
@@ -384,8 +407,9 @@ export default {
 					cursor: pointer;
 
 					audio {
-						height: 45px;
-						padding: 5px 0;
+						width: 280px;
+						height: 40px;
+						padding: 0;
 					}
 				}
 
@@ -401,7 +425,7 @@ export default {
 				}
 
 				.message-status {
-					margin-top: 3px;
+					margin-top: 5px;
 					display: block;
 
 					.chat-readed {
@@ -416,6 +440,7 @@ export default {
 				}
 
 				.chat-receipt {
+					margin-top: 5px;
 					font-size: var(--yeying-font-size-smaller);
 					cursor: pointer;
 					color: var(--yeying-text-color-light);
@@ -438,7 +463,7 @@ export default {
 		&.message-mine {
 			text-align: right;
 			padding-left: 0;
-			padding-right: 48px;
+			padding-right: 50px;
 
 			.head-image {
 				left: auto;
@@ -458,8 +483,8 @@ export default {
 				}
 
 				.message-bottom {
-					padding-left: 180px;
-					padding-right: 5px;
+					align-items: flex-end;
+					padding: 0;
 
 					.message-content-wrapper {
 						flex-direction: row-reverse;
@@ -467,6 +492,7 @@ export default {
 
 					.message-text {
 						background-color: var(--yeying-color-primary-light-2);
+						border-color: var(--yeying-color-primary-light-2);
 						color: #fff;
 					}
 

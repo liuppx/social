@@ -184,49 +184,62 @@ export default {
 <style lang="scss" scoped>
 .chat-group-side {
   position: relative;
+  height: 100%;
+  background: #ffffff;
 
   .search {
-    padding: 10px;
+    padding: 12px;
+    border-bottom: var(--yeying-border);
   }
 
   .el-divider--horizontal {
-    margin: 0;
+    margin: 8px 0 0;
   }
 
-  .el-form-item {
-    margin-bottom: 0px !important;
+  :deep(.el-form-item) {
+    margin-bottom: 12px;
   }
 
   .member-list {
-    padding: 10px;
+    padding: 12px;
     display: flex;
     align-items: center;
     flex-wrap: wrap;
+    gap: 10px 6px;
     font-size: 14px;
     text-align: center;
 
     .group-side-member {
-      margin-left: 5px;
+      margin-left: 0;
     }
 
     .member-tools {
       display: flex;
       flex-direction: column;
       align-items: center;
-      width: 54px;
-      margin-left: 5px;
+      width: 58px;
+      margin-left: 0;
 
       .tool-btn {
-        width: 38px;
-        height: 38px;
-        line-height: 38px;
-        border: var(--yeying-border);
-        font-size: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        line-height: 40px;
+        border: 1px solid #dcdfe6;
+        border-radius: 8px;
+        background: #f8f9fb;
+        color: #606266;
+        font-size: 16px;
         cursor: pointer;
         box-sizing: border-box;
+        transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
 
         &:hover {
-          border: #aaaaaa solid 1px;
+          border-color: var(--yeying-color-primary);
+          color: var(--yeying-color-primary);
+          background: var(--yeying-color-primary-light-9);
         }
       }
 
@@ -245,31 +258,34 @@ export default {
 
   .form {
     text-align: left;
-    padding: 10px;
-    height: 30%;
+    padding: 14px 12px 16px;
 
-    .el-form-item {
-      margin-bottom: 12px;
-
-      .el-form-item__label {
-        padding: 0;
-        line-height: 30px;
-      }
-
-      .el-textarea__inner {
-        min-height: 100px !important;
-      }
+    :deep(.el-form-item__label) {
+      padding: 0;
+      line-height: 22px;
+      color: #606266;
     }
 
-    .el-input__inner,
-    .el-textarea__inner {
+    :deep(.el-textarea__inner) {
+      min-height: 96px !important;
+    }
+
+    :deep(.el-input__inner),
+    :deep(.el-textarea__inner) {
       color: var(--yeying-text-color) !important;
     }
 
 
     .btn-group {
-      text-align: center;
-      margin-top: 12px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 14px;
+
+      .el-button {
+        margin-left: 0;
+        border-radius: 6px;
+      }
     }
   }
 }

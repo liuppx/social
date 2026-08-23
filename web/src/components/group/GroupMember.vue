@@ -31,14 +31,15 @@ export default {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	width: 50px;
+	width: 58px;
+	box-sizing: border-box;
 
 	.member-name {
 		font-size: 12px;
 		text-align: center;
 		width: 100%;
-		height: 30px;
-		line-height: 30px;
+		height: 24px;
+		line-height: 24px;
 		white-space: nowrap;
 		text-overflow: ellipsis;
 		overflow: hidden
