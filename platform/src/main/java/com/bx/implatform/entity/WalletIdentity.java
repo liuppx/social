@@ -7,14 +7,13 @@ import lombok.Data;
 import java.util.Date;
 
 @Data
-@TableName("t_passport_identity")
-public class PassportIdentity {
+@TableName("t_wallet_identity")
+public class WalletIdentity {
     @TableId
     private Long id;
-    private String subjectId;
+    private String walletIdentityDid;
     private Long userId;
     private String walletAddress;
-    private String deviceName;
     private Date createdTime;
     private Date updatedTime;
 }

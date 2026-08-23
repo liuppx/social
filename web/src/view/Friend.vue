@@ -235,14 +235,20 @@ export default {
 .friend-page {
 
 	.header {
-		height: 50px;
+		height: 56px;
 		display: flex;
 		align-items: center;
-		padding: 0 8px;
+		gap: 8px;
+		padding: 0 12px;
+		border-bottom: var(--yeying-border);
+		box-sizing: border-box;
+		background: #ffffff;
 
 		.add-btn {
-			padding: 5px !important;
-			margin: 5px;
+			width: 32px;
+			height: 32px;
+			padding: 0 !important;
+			margin: 0;
 			font-size: 16px;
 			border-radius: 50%;
 		}
@@ -265,35 +271,46 @@ export default {
 	flex-direction: column;
 
 	.header {
-		height: 50px;
+		height: 56px;
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
-		padding: 0 12px;
+		padding: 0 18px;
 		font-size: var(--yeying-font-size-larger);
 		border-bottom: var(--yeying-border);
 		box-sizing: border-box;
+		background: #ffffff;
 	}
 
 	.friend-info {
 		display: flex;
-		padding: 50px 80px 20px 80px;
-		text-align: center;
+		align-items: flex-start;
+		gap: 28px;
+		max-width: 760px;
+		padding: 48px;
+		text-align: left;
 
 		.info-item {
-			margin-left: 20px;
 			background-color: #ffffff;
-			border: 1px #ddd solid;
+			border: 1px solid #edf0f5;
+			border-radius: 8px;
+			min-width: 360px;
 		}
 
 		.description {
-			padding: 20px 20px 0 20px;
+			padding: 22px 24px 8px;
 		}
 	}
 
 	.btn-group {
-		text-align: left !important;
-		padding: 20px;
+		display: flex;
+		gap: 10px;
+		padding: 18px 0 0;
+
+		.el-button {
+			margin-left: 0;
+			border-radius: 6px;
+		}
 	}
 }
 </style>

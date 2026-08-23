@@ -1,47 +1,62 @@
 <template>
-	<div class="login-view">
-		<div class="decoration decoration-1"></div>
-		<div class="decoration decoration-2"></div>
-		<div class="decoration decoration-3"></div>
-		<div class="content">
-			<el-form class="form" :model="loginForm" status-icon :rules="rules" ref="loginForm"
-				@keyup.enter="emailLoginVisible && submitForm('loginForm')">
-				<div class="title">
-					<img class="logo" src="../../public/logo.png" />
-					<div>登录Yeying Social</div>
+	<div class="page-login">
+		<div class="login-body">
+			<img class="login-logo" src="../../public/logo.png" alt="Yeying Social" />
+			<el-form class="login-box" :model="loginForm" status-icon :rules="rules" ref="loginForm"
+				@keyup.enter="loginMode === 'wallet' && emailLoginVisible && submitForm('loginForm')">
+				<div class="login-mode-switch">
+					<el-tooltip :content="loginMode === 'passport' ? '钱包身份登录' : '通行证登录'" placement="left">
+						<div class="login-mode-switch-box" @click="switchLoginMode">
+							<span class="login-mode-switch-icon">
+								<svg v-if="loginMode === 'passport'" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M23 16a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h18a2 2 0 0 1 2 2v12ZM21 4H3v9h18V4ZM3 15v1h18v-1H3Zm3 6a1 1 0 0 1 1-1h10a1 1 0 1 1 0 2H7a1 1 0 0 1-1-1Z" fill="currentColor"></path></svg>
+								<svg v-else viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M6.5 7.5a1 1 0 0 1 1-1h1a1 1 0 0 1 1 1v1a1 1 0 0 1-1 1h-1a1 1 0 0 1-1-1v-1Z" fill="currentColor"></path><path d="M4.5 2.5c-1.1 0-2 .9-2 2v7c0 1.1.9 2 2 2h7c1.1 0 2-.9 2-2v-7c0-1.1-.9-2-2-2h-7Zm0 2h7v7h-7v-7ZM11 16a1 1 0 1 1 2 0 1 1 0 0 1-2 0Zm0 3.5a1 1 0 1 1 2 0v1a1 1 0 1 1-2 0v-1Zm4-7.5a1 1 0 1 1 2 0 1 1 0 0 1-2 0Zm3.5 0a1 1 0 0 1 1-1h1a1 1 0 1 1 0 2h-1a1 1 0 0 1-1-1ZM15 17c0-1.1.9-2 2-2h2.5c1.1 0 2 .9 2 2v2.5c0 1.1-.9 2-2 2H17c-1.1 0-2-.9-2-2V17Zm4.5 0H17v2.5h2.5V17Zm-15-2c-1.1 0-2 .9-2 2v2.5c0 1.1.9 2 2 2H7c1.1 0 2-.9 2-2V17c0-1.1-.9-2-2-2H4.5Zm0 2H7v2.5H4.5V17ZM15 4.5c0-1.1.9-2 2-2h2.5c1.1 0 2 .9 2 2V7c0 1.1-.9 2-2 2H17c-1.1 0-2-.9-2-2V4.5Zm4.5 0H17V7h2.5V4.5Z" fill="currentColor"></path></svg>
+							</span>
+						</div>
+					</el-tooltip>
 				</div>
+				<div class="login-title">{{ loginTitle }}</div>
+				<div class="login-subtitle">{{ loginSubtitle }}</div>
 				<el-form-item prop="terminal" v-show="false">
 					<el-input type="text" v-model="loginForm.terminal" autocomplete="off"></el-input>
 				</el-form-item>
-				<el-form-item>
-					<el-button type="primary" :loading="walletLoading" @click="walletSignIn">钱包登录</el-button>
-					<el-button type="success" plain :loading="passportLoading" @click="startPassportLogin">通行证登录</el-button>
-				</el-form-item>
-				<el-button class="email-login-toggle" text @click="toggleEmailLogin">邮箱密码登录</el-button>
-				<div v-if="emailLoginVisible" class="email-login">
-					<el-form-item prop="email">
-						<el-input v-model="loginForm.email" autocomplete="email" placeholder="邮箱">
-							<template #prefix><el-icon><User /></el-icon></template>
-						</el-input>
-					</el-form-item>
-					<el-form-item prop="password">
-						<el-input type="password" v-model="loginForm.password" autocomplete="current-password" placeholder="密码">
-							<template #prefix><el-icon><Lock /></el-icon></template>
-						</el-input>
-					</el-form-item>
-					<el-form-item>
-						<el-button @click="resetForm('loginForm')">清空</el-button>
-						<el-button type="primary" @click="submitForm('loginForm')">邮箱登录</el-button>
-					</el-form-item>
-				</div>
-				<div v-if="passportSession" class="passport-login">
-					<iframe class="passport-verify" :src="passportSession.verifyUrl" title="夜莺通行证登录确认"></iframe>
-					<div class="passport-status">{{ passportStatus }}</div>
-					<el-button text @click="cancelPassportLogin">取消通行证登录</el-button>
-				</div>
-				<div class="register">
-					<router-link to="/register">没有账号,前往注册</router-link>
-				</div>
+				<transition name="login-mode" mode="out-in">
+					<div v-if="loginMode === 'passport'" class="login-qrcode">
+						<div class="login-qrcode-frame" @click="refreshPassportLogin">
+							<img v-if="passportQrCode" class="login-qrcode-image" :src="passportQrCode" alt="通行证登录二维码" />
+							<span v-else class="login-qrcode-loading">{{ passportLoading ? '二维码生成中...' : '点击刷新二维码' }}</span>
+						</div>
+						<div v-if="passportStatus" class="login-qrcode-status">{{ passportStatus }}</div>
+						<el-button class="login-passport-local" text @click="openPassportAuthorize">无法扫码？使用本机通行证登录</el-button>
+					</div>
+					<div v-else class="login-access">
+						<el-button class="wallet-login-button" type="primary" size="large" :loading="walletLoading" @click="walletSignIn">钱包登录</el-button>
+						<el-button class="email-login-toggle" text @click="toggleEmailLogin">
+							邮箱密码登录
+							<el-icon class="email-login-arrow">
+								<ArrowUp v-if="emailLoginVisible" />
+								<ArrowDown v-else />
+							</el-icon>
+						</el-button>
+						<transition name="login-expand">
+							<div v-if="emailLoginVisible" class="email-login-panel">
+								<el-form-item prop="email">
+									<el-input v-model="loginForm.email" autocomplete="email" placeholder="邮箱" size="large">
+										<template #prefix><el-icon><User /></el-icon></template>
+									</el-input>
+								</el-form-item>
+								<el-form-item prop="password">
+									<el-input type="password" v-model="loginForm.password" autocomplete="current-password" placeholder="密码" size="large">
+										<template #prefix><el-icon><Lock /></el-icon></template>
+									</el-input>
+								</el-form-item>
+								<el-form-item class="email-login-actions">
+									<el-button size="large" @click="resetForm('loginForm')">清空</el-button>
+									<el-button type="primary" size="large" @click="submitForm('loginForm')">邮箱登录</el-button>
+								</el-form-item>
+							</div>
+						</transition>
+					</div>
+				</transition>
 			</el-form>
 		</div>
 		<icp></icp>
@@ -52,6 +67,7 @@
 import Icp from '../components/common/Icp.vue'
 import { createPassportLoginSession, getPassportLoginStatus } from '../api/passportAuth'
 import { walletLogin } from '../api/web3Auth'
+import QRCode from 'qrcode'
 export default {
 	name: "login",
 	components: {
@@ -88,15 +104,38 @@ export default {
 					trigger: 'blur'
 				}]
 			},
+			loginMode: 'wallet',
 			passportLoading: false,
 			walletLoading: false,
 			emailLoginVisible: false,
 			passportSession: null,
+			passportQrCode: '',
 			passportStatus: '',
-			passportTimer: null
+			passportTimer: null,
+			passportRequestSeq: 0,
+			passportBroadcastChannel: null
 		};
 	},
+	computed: {
+		loginTitle() {
+			return this.loginMode === 'passport' ? '通行证登录' : '钱包身份登录'
+		},
+		loginSubtitle() {
+			return this.loginMode === 'passport'
+				? '请使用手机相机或夜莺钱包扫码确认登录。'
+				: '使用钱包身份或已验证邮箱进入社区聊天'
+		}
+	},
 	methods: {
+		switchLoginMode() {
+			if (this.loginMode === 'passport') {
+				this.loginMode = 'wallet'
+				this.cancelPassportLogin()
+				return
+			}
+			this.loginMode = 'passport'
+			this.startPassportLogin()
+		},
 		async walletSignIn() {
 			this.walletLoading = true
 			try {
@@ -117,23 +156,52 @@ export default {
 		},
 		async startPassportLogin() {
 			this.cancelPassportLogin()
+			const requestSeq = ++this.passportRequestSeq
 			this.passportLoading = true
 			try {
 				const session = await createPassportLoginSession()
+				if (requestSeq !== this.passportRequestSeq || this.loginMode !== 'passport') return
 				if (!session.verifyUrl) throw new Error('通行证服务未返回确认地址')
 				this.passportSession = session
-				this.passportStatus = '请使用通行证确认登录'
+				this.passportStatus = '请使用手机相机或夜莺钱包扫码确认'
+				await this.renderPassportQrCode(session.verifyUrl)
+				if (requestSeq !== this.passportRequestSeq || this.loginMode !== 'passport') return
 				this.pollPassportStatus()
 			} catch (error) {
 				this.$message.error(error && error.message ? error.message : "无法发起通行证登录")
 			} finally {
-				this.passportLoading = false
+				if (requestSeq === this.passportRequestSeq) this.passportLoading = false
 			}
+		},
+		async refreshPassportLogin() {
+			if (this.passportLoading) return
+			await this.startPassportLogin()
+		},
+		async renderPassportQrCode(verifyUrl) {
+			this.passportQrCode = ''
+			this.passportQrCode = await QRCode.toDataURL(verifyUrl, {
+				width: 200,
+				margin: 2,
+				errorCorrectionLevel: 'M',
+				color: {
+					dark: '#202124',
+					light: '#ffffff'
+				}
+			})
+		},
+		openPassportAuthorize() {
+			if (!this.passportSession || !this.passportSession.verifyUrl) {
+				this.refreshPassportLogin()
+				return
+			}
+			window.open(this.passportSession.verifyUrl, '_blank')
 		},
 		async pollPassportStatus() {
 			if (!this.passportSession) return
+			const sessionId = this.passportSession.sessionId
 			try {
-				const result = await getPassportLoginStatus(this.passportSession.sessionId)
+				const result = await getPassportLoginStatus(sessionId)
+				if (!this.passportSession || this.passportSession.sessionId !== sessionId) return
 				if (result.status === 'approved' && result.login) {
 					sessionStorage.setItem('accessToken', result.login.accessToken)
 					sessionStorage.setItem('refreshToken', result.login.refreshToken)
@@ -156,10 +224,13 @@ export default {
 			}
 		},
 		cancelPassportLogin() {
+			this.passportRequestSeq += 1
 			if (this.passportTimer) window.clearTimeout(this.passportTimer)
 			this.passportTimer = null
 			this.passportSession = null
+			this.passportQrCode = ''
 			this.passportStatus = ''
+			this.passportLoading = false
 		},
 		submitForm(formName) {
 			this.$refs[formName].validate((valid) => {
@@ -185,135 +256,348 @@ export default {
 		resetForm(formName) {
 			this.$refs[formName].resetFields();
 		},
+		bindPassportCallbackEvents() {
+			window.addEventListener('storage', this.onPassportCallbackStorage)
+			window.addEventListener('message', this.onPassportCallbackMessage)
+			window.addEventListener('focus', this.checkPassportCallbackAfterReturn)
+			document.addEventListener('visibilitychange', this.onPassportVisibilityChange)
+			if ('BroadcastChannel' in window) {
+				this.passportBroadcastChannel = new BroadcastChannel('social-passport-login')
+				this.passportBroadcastChannel.onmessage = event => this.handlePassportCallbackEvent(event.data)
+			}
+		},
+		unbindPassportCallbackEvents() {
+			window.removeEventListener('storage', this.onPassportCallbackStorage)
+			window.removeEventListener('message', this.onPassportCallbackMessage)
+			window.removeEventListener('focus', this.checkPassportCallbackAfterReturn)
+			document.removeEventListener('visibilitychange', this.onPassportVisibilityChange)
+			if (this.passportBroadcastChannel) {
+				this.passportBroadcastChannel.close()
+				this.passportBroadcastChannel = null
+			}
+		},
+		onPassportCallbackStorage(event) {
+			if (event.key !== '__social_passport_callback__' || !event.newValue) return
+			this.handlePassportCallbackEvent(this.parsePassportCallback(event.newValue))
+		},
+		onPassportCallbackMessage(event) {
+			if (event.origin !== window.location.origin) return
+			this.handlePassportCallbackEvent(this.parsePassportCallback(event.data))
+		},
+		onPassportVisibilityChange() {
+			if (!document.hidden) this.checkPassportCallbackAfterReturn()
+		},
+		checkPassportCallbackAfterReturn() {
+			this.handlePassportCallbackEvent(this.parsePassportCallback(window.localStorage.getItem('__social_passport_callback__')))
+		},
+		parsePassportCallback(value) {
+			if (!value) return null
+			if (typeof value === 'object') return value
+			try {
+				return JSON.parse(value)
+			} catch (error) {
+				return null
+			}
+		},
+		handlePassportCallbackEvent(callback) {
+			if (!callback || callback.action !== 'social-passport-callback') return
+			if (!this.passportSession || callback.sessionId !== this.passportSession.sessionId) return
+			if (this.passportTimer) window.clearTimeout(this.passportTimer)
+			this.passportTimer = null
+			this.passportStatus = '已确认，正在登录...'
+			this.pollPassportStatus()
+		},
+	},
+	mounted() {
+		this.bindPassportCallbackEvents()
 	},
 	beforeUnmount() {
+		this.unbindPassportCallbackEvents()
 		this.cancelPassportLogin()
 	}
 }
 </script>
 
 <style scoped lang="scss">
-.login-view {
+.page-login {
 	width: 100%;
 	height: 100%;
 	box-sizing: border-box;
-	background: linear-gradient(15deg, var(--yeying-color-primary-light-9) 0%, var(--yeying-color-primary-light-4) 100%);
-	
-		/* 装饰性元素 */
-	.decoration {
-		position: absolute;
-		border-radius: 50%;
-		background: rgba(255, 255, 255, 0.2);
-	}
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background-color: #f8f8f8;
+	color: #202124;
 
-	.decoration-1 {
-		width: 150px;
-		height: 150px;
-		background: rgba(255, 255, 255, 0.2);
-		top: -150px;
-		right: 0px;
-		animation: float 16s infinite ease-in-out;
-	}
-
-	.decoration-2 {
-		width: 200px;
-		height: 200px;
-		background: rgba(255, 255, 255, 0.18);
-		bottom: -100px;
-		left: -50px;
-		animation: float 12s infinite ease-in-out;
-	}
-
-	.decoration-3 {
-		width: 100px;
-		height: 100px;
-		background: rgba(255, 255, 255, 0.15);
-		top: 50%;
-		right: 50px;
-		animation: float 8s infinite ease-in-out;
-	}
-
-	@keyframes float {
-		0%,
-		100% {
-			transform: translateY(0) translateX(0);
-		}
-
-		25% {
-			transform: translateY(-60px) translateX(30px);
-		}
-
-		50% {
-			transform: translateY(30px) translateX(-45px);
-		}
-
-		75% {
-			transform: translateY(-30px) translateX(-30px);
-		}
-	}
-		
-
-	.content {
-		position: relative;
+	.login-body {
 		display: flex;
-		justify-content: space-around;
+		flex-direction: column;
 		align-items: center;
-		padding: 10%;
+		width: 100%;
+		max-height: 100%;
+		padding: 32px 0;
+		overflow: auto;
 
-		.form {
-			width: 360px;
-			min-height: 380px;
-			padding: 30px;
-			background: rgba(255, 255, 255, 0.95);
-			border-radius: 3%;
+		.login-logo {
+			flex-shrink: 0;
+			width: 84px;
+			height: 84px;
+			object-fit: contain;
+		}
+
+		.login-box {
+			flex-shrink: 0;
+			position: relative;
+			width: 400px;
+			max-width: 90%;
+			margin-top: 36px;
+			border-radius: 12px;
+			background-color: #ffffff;
+			box-shadow: 0 0 10px #e6ecfa;
 			overflow: hidden;
 
-			.title {
-				display: flex;
-				justify-content: center;
-				align-items: center;
-				line-height: 50px;
-				margin: 30px 0 40px 0;
-				font-size: 22px;
+			.login-mode-switch {
+				position: absolute;
+				top: 4px;
+				right: 4px;
+				z-index: 2;
+				border-radius: 8px;
+				overflow: hidden;
+
+				.login-mode-switch-box {
+					width: 80px;
+					height: 80px;
+					transform: translate(40px, -40px) rotate(45deg);
+					cursor: pointer;
+					background-color: rgba(64, 158, 255, 0.82);
+					transition: background-color 0.2s ease;
+					overflow: hidden;
+
+					&:hover {
+						background-color: var(--yeying-color-primary, #409eff);
+					}
+
+					.login-mode-switch-icon {
+						position: absolute;
+						bottom: -20px;
+						left: 16px;
+						display: flex;
+						align-items: flex-start;
+						justify-content: flex-start;
+						width: 50px;
+						height: 50px;
+						color: #ffffff;
+						transform: rotate(-45deg);
+
+						> svg {
+							width: 32px;
+							height: 32px;
+							margin-top: 3px;
+							margin-left: 13px;
+						}
+					}
+				}
+			}
+
+			.login-title {
+				margin-top: 46px;
+				text-align: center;
+				font-size: 24px;
 				font-weight: 600;
-				letter-spacing: 2px;
-				text-transform: uppercase;
-				text-align: center;
-
-				.logo {
-					width: 30px;
-					height: 30px;
-					margin-right: 10px;
-				}
+				line-height: 32px;
 			}
 
-			.register {
+			.login-subtitle {
+				margin-top: 12px;
+				padding: 0 24px;
+				text-align: center;
+				color: #aaaaaa;
+				font-size: 14px;
+				line-height: 20px;
+			}
+
+			.login-qrcode {
 				display: flex;
-				flex-direction: row-reverse;
-				line-height: 40px;
-				text-align: left;
-				padding-left: 20px;
-			}
+				flex-direction: column;
+				align-items: center;
+				justify-content: center;
+				margin: 40px auto 34px;
 
-			.email-login-toggle { display: block; margin: -10px auto 14px; }
-
-			.email-login { margin-top: 4px; }
-
-			.passport-login {
-				margin-top: -8px;
-				text-align: center;
-				color: #606266;
-				font-size: 13px;
-
-				.passport-verify {
-					width: 100%;
-					height: 280px;
-					border: 1px solid #dcdfe6;
-					border-radius: 4px;
-					background: #fff;
+				.login-qrcode-frame {
+					position: relative;
+					display: flex;
+					align-items: center;
+					justify-content: center;
+					width: 208px;
+					height: 208px;
+					border-radius: 8px;
+					background: #ffffff;
+					cursor: pointer;
 				}
 
-				.passport-status { min-height: 24px; line-height: 24px; }
+				.login-qrcode-image {
+					width: 200px;
+					height: 200px;
+					object-fit: contain;
+				}
+
+				.login-qrcode-loading {
+					color: #aaaaaa;
+					font-size: 13px;
+				}
+
+				.login-qrcode-status {
+					min-height: 20px;
+					margin: 14px 32px 0;
+					color: #aaaaaa;
+					font-size: 13px;
+					line-height: 20px;
+					text-align: center;
+				}
+
+				.login-passport-local {
+					height: 30px;
+					margin-top: 8px;
+					padding: 0;
+					color: var(--yeying-color-primary, #409eff);
+				}
+			}
+
+			.login-mode-enter-active,
+			.login-mode-leave-active {
+				transition: opacity 0.12s ease;
+			}
+
+			.login-mode-enter-from,
+			.login-mode-leave-to {
+				opacity: 0;
+			}
+
+			.login-access {
+				margin: 26px 40px 30px;
+
+				> * {
+					margin-top: 18px;
+				}
+
+				.wallet-login-button {
+					width: 100%;
+					height: 44px;
+					font-size: 16px;
+				}
+
+				.email-login-toggle {
+					width: 100%;
+					height: 36px;
+					margin-left: 0;
+					color: #777777;
+					font-size: 14px;
+
+					.email-login-arrow {
+						margin-left: 6px;
+						font-size: 14px;
+					}
+				}
+
+				.email-login-panel {
+					overflow: hidden;
+
+					:deep(.el-form-item) {
+						margin-bottom: 18px;
+					}
+
+					:deep(.el-input__wrapper) {
+						min-height: 44px;
+						border-radius: 4px;
+						box-shadow: 0 0 0 1px #f1f1f1 inset;
+					}
+
+					.email-login-actions {
+						margin-bottom: 0;
+
+						:deep(.el-form-item__content) {
+							display: grid;
+							grid-template-columns: 1fr 1fr;
+							gap: 12px;
+						}
+
+						.el-button {
+							width: 100%;
+							margin-left: 0;
+						}
+					}
+				}
+
+				.login-expand-enter-active,
+				.login-expand-leave-active {
+					transition: opacity 0.2s ease, transform 0.2s ease;
+					transform-origin: top;
+				}
+
+				.login-expand-enter-from,
+				.login-expand-leave-to {
+					opacity: 0;
+					transform: translateY(-8px);
+				}
+
+			}
+		}
+	}
+}
+
+@media screen and (max-width: 520px) {
+	.page-login {
+		align-items: flex-start;
+
+		.login-body {
+			padding: 24px 0 96px;
+
+			.login-logo {
+				width: 76px;
+				height: 76px;
+			}
+
+			.login-box {
+				width: 100%;
+				max-width: 460px;
+				margin-top: 12px;
+				border-radius: 12px;
+				background-color: transparent;
+				box-shadow: none;
+
+				.login-title {
+					margin-top: 20px;
+					font-size: 26px;
+				}
+
+				.login-subtitle {
+					margin-top: 4px;
+				}
+
+				.login-access {
+					margin: 20px 36px;
+				}
+			}
+		}
+	}
+}
+
+@media screen and (max-height: 720px) {
+	.page-login {
+		.login-body {
+			.login-box {
+				.login-title {
+					margin-top: 24px;
+				}
+
+				.login-access {
+					margin-top: 18px;
+					margin-bottom: 20px;
+
+					> * {
+						margin-top: 14px;
+					}
+				}
 			}
 		}
 	}

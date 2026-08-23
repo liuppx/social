@@ -1,0 +1,8 @@
+passport:
+  # Local Node identity service.
+  node-base-url: http://127.0.0.1:8100
+  # Replace with the UUID/appId of the Social application published in Node.
+  app-id: social-local
+  # Local browser login through web devServer proxy.
+  # For mobile QR testing, replace 127.0.0.1 with your computer LAN IP.
+  callback-url: http://127.0.0.1:8082/api/passport/callback

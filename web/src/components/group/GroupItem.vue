@@ -33,13 +33,16 @@ export default {
 
 <style lang="scss" scoped>
 .group-item {
-	height: 50px;
+	height: 60px;
 	display: flex;
 	position: relative;
-	border-radius: 10px;
-	margin: 0 3px;
-	padding: 5px 8px;
+	align-items: center;
+	border-radius: 8px;
+	margin: 4px 8px;
+	padding: 8px;
 	cursor: pointer;
+	box-sizing: border-box;
+	transition: background-color 0.15s ease;
 
 	&:hover {
 		background-color: var(--yeying-background-active);
@@ -51,11 +54,12 @@ export default {
 
 	.group-name {
 		padding-left: 10px;
-		height: 100%;
+		flex: 1;
 		text-align: left;
-		line-height: 50px;
+		line-height: 22px;
 		white-space: nowrap;
 		overflow: hidden;
+		text-overflow: ellipsis;
 		font-size: var(--yeying-font-size);
 	}
 }

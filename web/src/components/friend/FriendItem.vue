@@ -71,17 +71,19 @@ export default {
 }
 </script>
 
-<style scope lang="scss">
+<style scoped lang="scss">
 .friend-item {
-	height: 50px;
+	height: 60px;
 	display: flex;
 	position: relative;
 	align-items: center;
 	white-space: nowrap;
-	border-radius: 10px;
-	margin: 0 3px;
-	padding: 5px 8px;
+	border-radius: 8px;
+	margin: 4px 8px;
+	padding: 8px;
 	cursor: pointer;
+	box-sizing: border-box;
+	transition: background-color 0.15s ease;
 
 	&:hover {
 		background-color: var(--yeying-background-active);
@@ -103,14 +105,20 @@ export default {
 		flex-direction: column;
 		padding-left: 10px;
 		text-align: left;
+		min-width: 0;
 
 		.friend-name {
 			font-size: var(--yeying-font-size);
 			white-space: nowrap;
 			overflow: hidden;
+			text-overflow: ellipsis;
+			line-height: 22px;
 		}
 
 			.friend-online {
+				height: 20px;
+				line-height: 20px;
+
 				.online-wrap {
 					display: inline-flex;
 					position: relative;

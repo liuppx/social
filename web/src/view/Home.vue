@@ -504,45 +504,46 @@ export default {
 </script>
 
 <style scoped lang="scss">
-.home-page {
-	height: 100vh;
-	width: 100vw;
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	border-radius: 4px;
-	overflow: hidden;
-	background: var(--yeying-color-primary-light-9);
-
-	.app-container {
-		width: 62vw;
-		height: 80vh;
+	.home-page {
+		height: 100vh;
+		width: 100vw;
 		display: flex;
-		min-height: 600px;
-		min-width: 970px;
-		position: absolute;
-		border-radius: 4px;
+		justify-content: center;
+		align-items: center;
 		overflow: hidden;
-		box-shadow: var(--yeying-box-shadow-dark);
-		transition: 0.2s;
+		background: #eef1f6;
 
-		&.fullscreen {
-			transition: 0.2s;
-			width: 100vw;
-			height: 100vh;
-		}
-	}
-
-	.navi-bar {
-		--icon-font-size: 22px;
-		--width: 60px;
-		width: var(--width);
-		background: var(--yeying-color-primary-light-1);
-		padding-top: 20px;
-
-		.navi-bar-box {
-			height: 100%;
+		.app-container {
+			width: min(1280px, calc(100vw - 48px));
+			height: min(840px, calc(100vh - 48px));
 			display: flex;
+			min-height: 600px;
+			min-width: 960px;
+			border-radius: 8px;
+			overflow: hidden;
+			background: #ffffff;
+			box-shadow: 0 18px 48px rgba(31, 35, 53, 0.16);
+			transition: 0.2s;
+
+			&.fullscreen {
+				transition: 0.2s;
+				width: 100vw;
+				height: 100vh;
+				border-radius: 0;
+			}
+		}
+
+		.navi-bar {
+			--icon-font-size: 22px;
+			--width: 64px;
+			width: var(--width);
+			background: #252944;
+			padding-top: 18px;
+			box-sizing: border-box;
+
+			.navi-bar-box {
+				height: 100%;
+				display: flex;
 			flex-direction: column;
 			justify-content: space-between;
 
@@ -556,13 +557,13 @@ export default {
 			justify-content: center;
 		}
 
-		.menu {
-			display: flex;
-			flex-direction: column;
-			justify-content: center;
-			align-content: center;
-			flex-wrap: wrap;
-			margin-top: 20px;
+			.menu {
+				display: flex;
+				flex-direction: column;
+				justify-content: center;
+				align-content: center;
+				flex-wrap: wrap;
+				margin-top: 18px;
 
 			.link {
 				text-decoration: none;
@@ -570,25 +571,24 @@ export default {
 
 			.router-link-active .menu-item {
 				color: white;
-				background: var(--yeying-color-primary-light-2);
+				background: rgba(255, 255, 255, 0.16);
 			}
 
 			.link:not(.router-link-active) .menu-item:hover {
-				background: var(--yeying-color-primary);
-				transform: scale(1.1);
+				background: rgba(255, 255, 255, 0.1);
 			}
 
 			.menu-item {
 				position: relative;
-				color: #eee;
-				width: var(--width);
-				height: 46px;
-				width: 46px;
+				color: rgba(255, 255, 255, 0.76);
+				width: 44px;
+				height: 44px;
 				display: flex;
 				justify-content: center;
 				align-items: center;
-				margin-top: 30px;
-				border-radius: 10px;
+				margin-top: 16px;
+				border-radius: 8px;
+				transition: background-color 0.15s ease, color 0.15s ease;
 
 				.icon {
 					font-size: var(--icon-font-size)
@@ -614,10 +614,10 @@ export default {
 			display: flex;
 			justify-content: center;
 			align-items: center;
-			height: 50px;
+			height: 44px;
 			width: 100%;
 			cursor: pointer;
-			color: var(--yeying-color-primary-light-4);
+			color: rgba(255, 255, 255, 0.58);
 			font-size: var(--icon-font-size);
 
 			.icon {
@@ -625,8 +625,7 @@ export default {
 			}
 
 			&:hover {
-				font-weight: 600;
-				color: var(--yeying-color-primary-light-7);
+				color: rgba(255, 255, 255, 0.9);
 			}
 		}
 	}
@@ -635,7 +634,8 @@ export default {
 		flex: 1;
 		padding: 0;
 		background-color: #fff;
-		text-align: center;
+		text-align: initial;
+		min-width: 0;
 	}
 }
 </style>

@@ -10,3 +10,14 @@ export const getPassportLoginStatus = (sessionId) => http({
 	method: 'get',
 	params: { sessionId }
 })
+
+export const createWalletIdentityLoginSession = () => http({
+	url: '/passport/identity/login/session',
+	method: 'post'
+})
+
+export const verifyWalletIdentityLogin = (data) => http({
+	url: '/passport/identity/login/verify',
+	method: 'post',
+	data
+})

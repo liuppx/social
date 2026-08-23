@@ -359,14 +359,20 @@ export default {
 .group-page {
 
 	.header {
-		height: 50px;
+		height: 56px;
 		display: flex;
 		align-items: center;
-		padding: 0 8px;
+		gap: 8px;
+		padding: 0 12px;
+		border-bottom: var(--yeying-border);
+		box-sizing: border-box;
+		background: #ffffff;
 
 		.add-btn {
-			padding: 5px !important;
-			margin: 5px;
+			width: 32px;
+			height: 32px;
+			padding: 0 !important;
+			margin: 0;
 			font-size: 16px;
 			border-radius: 50%;
 		}
@@ -390,10 +396,14 @@ export default {
 		.header {
 			display: flex;
 			justify-content: space-between;
-			padding: 0 12px;
-			line-height: 50px;
+			align-items: center;
+			height: 56px;
+			padding: 0 18px;
+			line-height: 56px;
 			font-size: var(--yeying-font-size-larger);
 			border-bottom: var(--yeying-border);
+			box-sizing: border-box;
+			background: #ffffff;
 		}
 
 		.el-divider--horizontal {
@@ -402,16 +412,19 @@ export default {
 
 		.container-box {
 			overflow: auto;
-			padding: 20px;
+			padding: 28px;
 			flex: 1;
+			background: #ffffff;
 
 			.group-info {
 				display: flex;
-				padding: 5px 20px;
+				align-items: flex-start;
+				gap: 32px;
+				max-width: 920px;
+				padding: 0;
 
 				.form {
 					flex: 1;
-					padding-left: 40px;
 					max-width: 700px;
 				}
 
@@ -420,11 +433,12 @@ export default {
 					text-align: left;
 
 					.el-upload {
-						border: 1px dashed #d9d9d9 !important;
-						border-radius: 6px;
+						border: 1px dashed #cfd6e4 !important;
+						border-radius: 8px;
 						cursor: pointer;
 						position: relative;
 						overflow: hidden;
+						background: #f8f9fb;
 					}
 
 					.el-upload:hover {
@@ -449,37 +463,48 @@ export default {
 
 				.send-btn {
 					margin-top: 12px;
+					width: 160px;
+					border-radius: 6px;
 				}
 			}
 
 			.member-items {
-				padding: 0 12px;
+				padding: 0;
 				display: flex;
 				align-items: center;
 				flex-wrap: wrap;
 				text-align: center;
+				gap: 10px 6px;
 
 				.member-item {
-					margin-right: 5px;
+					margin-right: 0;
 				}
 
 				.member-tools {
 					display: flex;
 					flex-direction: column;
 					align-items: center;
-					width: 60px;
+					width: 64px;
 
 					.tool-btn {
-						width: 38px;
-						height: 38px;
-						line-height: 38px;
-						border: var(--yeying-border);
-						font-size: 14px;
+						display: flex;
+						align-items: center;
+						justify-content: center;
+						width: 42px;
+						height: 42px;
+						line-height: 42px;
+						border: 1px solid #dcdfe6;
+						border-radius: 8px;
+						background: #f8f9fb;
+						color: #606266;
+						font-size: 16px;
 						cursor: pointer;
 						box-sizing: border-box;
 
 						&:hover {
-							border: #aaaaaa solid 1px;
+							border-color: var(--yeying-color-primary);
+							color: var(--yeying-color-primary);
+							background: var(--yeying-color-primary-light-9);
 						}
 					}
 

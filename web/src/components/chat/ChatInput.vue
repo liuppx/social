@@ -495,12 +495,14 @@ export default {
 		right: 0;
 		bottom: 0;
 		outline: none;
-		padding: 5px;
-		line-height: 26px;
+		padding: 12px 118px 52px 14px;
+		line-height: 24px;
 		font-size: var(--yeying-font-size);
 		text-align: left;
 		overflow-y: auto;
 		white-space: pre-wrap;
+		box-sizing: border-box;
+		color: #303133;
 
 		// 单独一行时，无法在前面输入的bug
 		>div:before {
@@ -564,7 +566,7 @@ export default {
 
 	.edit-container>div:nth-of-type(1):after {
 		content: '请输入消息（按Ctrl+Enter键换行）';
-		color: gray;
+		color: #a8abb2;
 	}
 
 	.edit-container.not-empty>div:nth-of-type(1):after {

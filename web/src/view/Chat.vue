@@ -103,10 +103,13 @@ export default {
 .chat-page {
   
   .header {
-    height: 50px;
+    height: 56px;
     display: flex;
     align-items: center;
-    padding: 0 8px;
+    padding: 0 12px;
+    border-bottom: var(--yeying-border);
+    box-sizing: border-box;
+    background: #ffffff;
   }
 
   .chat-loading {

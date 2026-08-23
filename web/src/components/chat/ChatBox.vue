@@ -1,7 +1,7 @@
 <template>
 	<div class="chat-box" @click="closeRefBox()" @mousemove="readedMessage()">
 			<el-container>
-				<el-header height="50px">
+				<el-header height="56px">
 					<span>{{ title }}</span>
 					<el-icon title="群聊信息" v-show="isGroup" class="btn-side" @click="showSide = !showSide">
 						<More />
@@ -1113,16 +1113,17 @@ export default {
 	.el-header {
 		display: flex;
 		justify-content: space-between;
-		padding: 0 12px;
-		line-height: 50px;
+		align-items: center;
+		padding: 0 18px;
+		line-height: 56px;
 		font-size: var(--yeying-font-size-larger);
 		border-bottom: var(--yeying-border);
+		box-sizing: border-box;
+		background: #ffffff;
 
 
 		.btn-side {
-			position: absolute;
-			right: 20px;
-			line-height: 50px;
+			line-height: 56px;
 			font-size: 20px;
 			cursor: pointer;
 			color: var(--yeying-text-color-light);
@@ -1134,7 +1135,7 @@ export default {
 
 		.yeying-chat-main {
 			padding: 0;
-			background-color: #f4f5f6;
+			background-color: #f7f8fa;
 
 			.yeying-chat-box {
 				>ul {
@@ -1148,15 +1149,15 @@ export default {
 		}
 
 		.scroll-to-bottom {
-			text-align: right;
+			text-align: center;
 			position: absolute;
 			right: 20px;
 			bottom: 230px;
 			color: var(--yeying-color-primary);
 			font-size: var(--yeying-font-size);
-			font-weight: 600;
-			background: #eee;
-			padding: 5px 15px;
+			font-weight: 500;
+			background: #ffffff;
+			padding: 6px 14px;
 			border-radius: 15px;
 			cursor: pointer;
 			z-index: 99;
@@ -1168,51 +1169,58 @@ export default {
 			flex-direction: column;
 			position: relative;
 			padding: 0;
+			background: #ffffff;
+			border-top: var(--yeying-border);
 
 			.chat-tool-bar {
 				display: flex;
+				align-items: center;
 				position: relative;
 				width: 100%;
-				height: 36px;
+				height: 42px;
 				text-align: left;
 				box-sizing: border-box;
-				border-top: var(--yeying-border);
-				padding: 4px 2px 2px 8px;
+				padding: 5px 10px;
+				gap: 6px;
 
 				>div {
-					font-size: 22px;
+					display: flex;
+					align-items: center;
+					justify-content: center;
+					font-size: 20px;
 					cursor: pointer;
-					line-height: 30px;
-					width: 30px;
-					height: 30px;
+					line-height: 32px;
+					width: 32px;
+					height: 32px;
 					text-align: center;
-					border-radius: 2px;
-					margin-right: 8px;
-					color: #999;
-					transition: 0.3s;
+					border-radius: 6px;
+					margin-right: 0;
+					color: #7a8190;
+					transition: background-color 0.15s ease, color 0.15s ease;
 
 					&.chat-tool-active {
 						font-weight: 600;
 						color: var(--yeying-color-primary);
-						background-color: #ddd;
+						background-color: var(--yeying-color-primary-light-9);
 					}
 				}
 
 				>div:hover {
-					color: #333;
+					color: #303133;
+					background: #f2f3f5;
 				}
 
 				:deep(.el-dropdown) {
-					margin-right: 8px;
+					margin-right: 0;
 				}
 
 				.ai-tool {
 					display: flex;
 					align-items: center;
 					justify-content: center;
-					width: 30px;
-					height: 30px;
-					border-radius: 2px;
+					width: 32px;
+					height: 32px;
+					border-radius: 6px;
 					color: var(--yeying-color-primary);
 
 					&.disabled {
@@ -1330,12 +1338,18 @@ export default {
 				flex-direction: column;
 				height: 100%;
 				background-color: white !important;
+				border-top: 1px solid #f0f2f5;
 
 				.send-btn-area {
-					padding: 10px;
 					position: absolute;
-					bottom: 4px;
-					right: 6px;
+					bottom: 12px;
+					right: 14px;
+
+					:deep(.el-button) {
+						height: 34px;
+						padding: 0 14px !important;
+						border-radius: 6px;
+					}
 				}
 			}
 		}

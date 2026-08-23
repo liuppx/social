@@ -48,7 +48,7 @@
 }
 
 .el-button {
-  padding: 8px 15px !important;
+  --el-border-radius-base: 4px;
 }
 
 .el-checkbox {
@@ -80,15 +80,29 @@
 }
 
 .el-form-item {
-  margin-bottom: 15px !important;
+  margin-bottom: 16px;
 }
 
 .el-input--small {
+  --el-input-height: 32px;
   font-size: 14px;
 }
 
+.el-input {
+  --el-input-height: 36px;
+}
+
+.el-input--large {
+  --el-input-height: 44px;
+}
+
+.el-input__wrapper {
+  border-radius: 4px;
+  padding: 1px 11px;
+}
+
 .el-input__inner {
-  padding: 0 10px;
+  padding: 0;
 }
 
 .el-textarea__inner {

@@ -42,8 +42,9 @@ ai:
 
 passport:
   # Node Passport is the only authority for Wallet and Passkey authentication.
-  node-base-url: ${PASSPORT_NODE_BASE_URL:}
-  app-id: ${PASSPORT_APP_ID:}
-  callback-url: ${PASSPORT_CALLBACK_URL:}
+  # Override these in an external application.yml at startup.
+  node-base-url:
+  app-id:
+  callback-url:
   scopes: identity.basic,identity.email,identity.wallet
   session-ttl-seconds: 300

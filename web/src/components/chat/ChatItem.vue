@@ -117,16 +117,18 @@ export default {
 
 <style lang="scss" scoped>
 .chat-item {
-	height: 56px;
+	height: 64px;
 	display: flex;
 	position: relative;
-	margin: 0 3px;
-	padding: 5px 8px;
+	margin: 4px 8px;
+	padding: 8px;
 	align-items: center;
 	background-color: var(--yeying-background);
 	white-space: nowrap;
 	cursor: pointer;
-	border-radius: 10px;
+	border-radius: 8px;
+	box-sizing: border-box;
+	transition: background-color 0.15s ease;
 
 	&:hover {
 		background-color: var(--yeying-background-active);
@@ -168,16 +170,25 @@ export default {
 
 		.chat-name {
 			display: flex;
-			line-height: 26px;
-			height: 26px;
+			align-items: center;
+			line-height: 22px;
+			height: 24px;
+			min-width: 0;
 
 			.chat-name-text {
 				flex: 1;
 				display: flex;
 				align-items: center;
+				gap: 6px;
 				font-size: var(--yeying-font-size);
 				white-space: nowrap;
 				overflow: hidden;
+				min-width: 0;
+
+				> div {
+					overflow: hidden;
+					text-overflow: ellipsis;
+				}
 			}
 
 			.chat-time-text {
@@ -192,7 +203,9 @@ export default {
 
 		.chat-content {
 			display: flex;
-			line-height: 24px;
+			align-items: center;
+			line-height: 22px;
+			min-width: 0;
 
 			.chat-at-text {
 				color: #c70b0b;
@@ -200,6 +213,7 @@ export default {
 			}
 
 			.chat-send-name {
+				flex: none;
 				font-size: var(--yeying-font-size-small);
 				color: var(--yeying-text-color-light);
 			}

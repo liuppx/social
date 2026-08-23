@@ -108,6 +108,15 @@ section {
 
 }
 
+.search-text {
+  width: 100%;
+
+  .el-input__wrapper {
+    background-color: #f6f7fb;
+    box-shadow: 0 0 0 1px #edf0f7 inset;
+  }
+}
+
 .emoji-large {
   width: 32px;
   height: 32px;
