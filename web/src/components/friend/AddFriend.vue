@@ -1,13 +1,13 @@
 <template>
 			<el-dialog draggable class="add-friend" title="添加好友" :model-value="dialogVisible"
-				@update:model-value="onDialogVisibleChange" width="400px" :before-close="onClose">
-				<el-input placeholder="输入用户名或昵称按下enter搜索，最多展示20条" class="input-with-select" v-model="searchText" size="small"
+				@update:model-value="onDialogVisibleChange" width="440px" :before-close="onClose">
+				<el-input placeholder="输入用户名或昵称搜索" class="input-with-select" v-model="searchText"
 					@keyup.enter="onSearch()">
 					<template #suffix>
 						<el-icon @click="onSearch()"><Search /></el-icon>
 					</template>
 				</el-input>
-		<el-scrollbar style="height:400px">
+		<el-scrollbar class="user-list">
 			<div v-for="(user) in users" :key="user.id" v-show="user.id != userStore.userInfo.id">
 				<div class="item">
 					<div class="avatar">
@@ -102,32 +102,58 @@ export default {
 
 <style lang="scss" scoped>
 .add-friend {
+	.input-with-select {
+		margin-bottom: 12px;
+	}
+
+	.user-list {
+		height: 400px;
+		border: 1px solid #edf0f5;
+		border-radius: 8px;
+		background: #ffffff;
+	}
+
 	.item {
-		height: 65px;
+		height: 68px;
 		display: flex;
 		position: relative;
-		padding-left: 15px;
+		gap: 12px;
+		padding: 10px 12px;
 		align-items: center;
-		padding-right: 25px;
+		box-sizing: border-box;
+		border-bottom: 1px solid #f2f3f5;
+
+		&:hover {
+			background: #f8f9fb;
+		}
 
 		.friend-info {
-			margin-left: 15px;
-			flex: 3;
+			flex: 1;
+			min-width: 0;
 			display: flex;
 			flex-direction: column;
-			flex-shrink: 0;
 			overflow: hidden;
 
 			.nick-name {
 				display: flex;
 				flex-direction: row;
+				align-items: center;
+				gap: 8px;
 				font-weight: 600;
-				font-size: 16px;
-				line-height: 25px;
+				font-size: var(--yeying-font-size);
+				line-height: 22px;
+				min-width: 0;
+
+				> div:first-child {
+					overflow: hidden;
+					text-overflow: ellipsis;
+					white-space: nowrap;
+				}
 
 				.online-status {
 					font-size: 12px;
-					font-weight: 600;
+					font-weight: 500;
+					color: var(--yeying-text-color-light);
 
 					&.online {
 						color: #5fb878;
@@ -140,6 +166,10 @@ export default {
 				flex-direction: row;
 				font-size: 12px;
 				line-height: 20px;
+				color: var(--yeying-text-color-light);
+				overflow: hidden;
+				text-overflow: ellipsis;
+				white-space: nowrap;
 			}
 
 		}

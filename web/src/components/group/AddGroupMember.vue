@@ -1,20 +1,20 @@
 <template>
-	<el-dialog draggable title="邀请好友" v-model="show" width="620px" :before-close="close">
+	<el-dialog draggable class="add-group-member-dialog" title="邀请好友" v-model="show" width="680px" :before-close="close">
 		<div class="add-group-member">
 				<div class="left-box">
 					<div class="search">
-							<el-input placeholder="搜索好友" v-model="searchText" size="small">
+							<el-input placeholder="搜索好友" v-model="searchText">
 								<template #suffix>
 									<el-icon><Search /></el-icon>
 								</template>
 							</el-input>
 				</div>
-				<el-scrollbar style="height:400px;">
+				<el-scrollbar class="select-scroll">
 					<div v-for="friend in friends" :key="friend.id">
 						<friend-item v-show="friend.nickName.includes(searchText)" :showDelete="false"
 							@click="onSwitchCheck(friend)" :menu="false" :friend="friend" :active="false">
 							<el-checkbox :disabled="friend.disabled" @click.stop="" class="checkbox"
-								v-model="friend.isCheck" size="medium"></el-checkbox>
+								v-model="friend.isCheck"></el-checkbox>
 						</friend-item>
 					</div>
 				</el-scrollbar>
@@ -24,7 +24,7 @@
 				</div>
 			<div class="right-box">
 				<div class="tip"> 已勾选{{ checkCount }}位好友</div>
-				<el-scrollbar style="height:400px;">
+				<el-scrollbar class="select-scroll">
 					<div v-for="friend in friends" :key="friend.id">
 						<friend-item v-if="friend.isCheck && !friend.disabled" :friend="friend" :active="false"
 							@del="onRemoveFriend(friend)" :menu="false">
@@ -132,25 +132,30 @@ export default {
 <style lang="scss" scoped>
 .add-group-member {
 	display: flex;
+	gap: 12px;
 
 	.left-box {
 		flex: 1;
 		overflow: hidden;
-		border: var(--yeying-border);
+		border: 1px solid #edf0f5;
+		border-radius: 8px;
+		background: #ffffff;
 
 		.search {
-			height: 40px;
+			height: 50px;
 			display: flex;
 			align-items: center;
+			padding: 8px;
+			box-sizing: border-box;
+			border-bottom: 1px solid #edf0f5;
+		}
 
-			.el-input__inner {
-				border: unset;
-				border-bottom: var(--yeying-border);
-			}
+		.select-scroll {
+			height: 400px;
 		}
 
 		.checkbox {
-			margin-right: 20px;
+			margin-right: 8px;
 		}
 	}
 
@@ -158,22 +163,42 @@ export default {
 		display: flex;
 		align-items: center;
 		font-size: 18px;
-		padding: 10px;
+		padding: 0 2px;
 		font-weight: 600;
 		color: var(--yeying-color-primary);
 	}
 
 	.right-box {
 		flex: 1;
-		border: var(--yeying-border);
+		overflow: hidden;
+		border: 1px solid #edf0f5;
+		border-radius: 8px;
+		background: #ffffff;
 
 		.tip {
 			text-align: left;
-			height: 40px;
-			line-height: 40px;
-			text-indent: 10px;
-			color: var(--yeying-text-color-light)
+			height: 50px;
+			line-height: 50px;
+			padding: 0 12px;
+			box-sizing: border-box;
+			border-bottom: 1px solid #edf0f5;
+			color: var(--yeying-text-color-light);
 		}
+
+		.select-scroll {
+			height: 400px;
+		}
+	}
+}
+
+.dialog-footer {
+	display: flex;
+	justify-content: flex-end;
+	gap: 8px;
+
+	.el-button {
+		margin-left: 0;
+		border-radius: 6px;
 	}
 }
 </style>

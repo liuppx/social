@@ -1,12 +1,14 @@
 <template>
-	<el-dialog draggable :title="title" v-model="isShow" width="700px">
+	<el-dialog draggable class="group-member-selector-dialog" :title="title" v-model="isShow" width="720px">
 		<div class="group-member-selector">
 				<div class="left-box">
+					<div class="search">
 						<el-input placeholder="搜索" v-model="searchText">
 							<template #suffix>
 								<el-icon><Search /></el-icon>
 							</template>
 						</el-input>
+					</div>
 				<virtual-scroller class="scroll-box" :items="showMembers">
 					<template v-slot="{ item }">
 						<group-member-item :group="group" :groupMembers="showMembers" :member="item" :menu="false"
@@ -132,19 +134,24 @@ export default {
 <style lang="scss" scoped>
 .group-member-selector {
 	display: flex;
+	gap: 12px;
 
 	.scroll-box {
 		height: 400px;
 	}
 
 	.left-box {
-		width: 48%;
+		flex: 1;
 		overflow: hidden;
-		border: var(--yeying-border);
+		border: 1px solid #edf0f5;
+		border-radius: 8px;
+		background: #ffffff;
 
-		.el-input__inner {
-			border: none;
-			border-bottom: var(--yeying-border);
+		.search {
+			height: 50px;
+			padding: 8px;
+			box-sizing: border-box;
+			border-bottom: 1px solid #edf0f5;
 		}
 	}
 
@@ -152,33 +159,50 @@ export default {
 		display: flex;
 		align-items: center;
 		font-size: 20px;
-		padding: 10px;
+		padding: 0 2px;
 		font-weight: 600;
 		color: var(--yeying-color-primary);
 	}
 
 	.right-box {
-		width: 48%;
-		border: var(--yeying-border);
+		flex: 1;
+		overflow: hidden;
+		border: 1px solid #edf0f5;
+		border-radius: 8px;
+		background: #ffffff;
 
 		.select-tip {
 			text-align: left;
-			height: 40px;
-			line-height: 40px;
-			text-indent: 5px;
-			color: var(--yeying-text-color-light)
+			height: 50px;
+			line-height: 50px;
+			padding: 0 12px;
+			box-sizing: border-box;
+			border-bottom: 1px solid #edf0f5;
+			color: var(--yeying-text-color-light);
 		}
 
 		.member-items {
-			padding: 10px;
+			padding: 12px;
 			display: flex;
 			flex-direction: row;
 			flex-wrap: wrap;
+			gap: 8px 4px;
 
 			.member-item {
-				padding: 2px;
+				padding: 0;
 			}
 		}
+	}
+}
+
+.dialog-footer {
+	display: flex;
+	justify-content: flex-end;
+	gap: 8px;
+
+	.el-button {
+		margin-left: 0;
+		border-radius: 6px;
 	}
 }
 </style>

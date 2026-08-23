@@ -41,12 +41,13 @@ export default {
 .group-member-item {
     display: flex;
     position: relative;
-    padding: 0 15px;
+    padding: 0 10px;
     align-items: center;
     white-space: nowrap;
     box-sizing: border-box;
-    border-radius: 5px;
-    margin: 0 1px;
+    border-radius: 8px;
+    margin: 4px 8px;
+    transition: background-color 0.15s ease;
 
 	&:hover {
 		background-color: var(--yeying-background-active);
@@ -63,6 +64,7 @@ export default {
         text-align: left;
         white-space: nowrap;
         overflow: hidden;
+        text-overflow: ellipsis;
         font-size: var(--yeying-font-size);
     }
 }
