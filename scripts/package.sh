@@ -173,10 +173,17 @@ if [[ ! -d "${ROOT_DIR}/tests/smoke" ]]; then
 fi
 cp -R "${ROOT_DIR}/tests" "${STAGE_DIR}/"
 
-cat > "${STAGE_DIR}/config/runtime.env.example" <<'EOF'
-# JVM settings
+cat > "${STAGE_DIR}/config/runtime.env.template" <<'EOF'
+# Copy this file to config/runtime.env before starting services.
+# The startup script sources config/runtime.env when it exists.
+
+# Java executable.
 # export JAVA_BIN=java
-# export JAVA_OPTS="-Xms512m -Xmx1024m"
+
+# JVM options shared by platform, server, rtc and web3-identity.
+# Keep Spring application arguments out of JAVA_OPTS unless they are JVM system
+# properties. The startup script places JAVA_OPTS before "-jar".
+# export JAVA_OPTS="-Xms512m -Xmx1024m -Dspring.profiles.active=prod"
 EOF
 
 tar -czf "${ARCHIVE_PATH}" -C "${OUTPUT_DIR}" "${PKG_DIR_NAME}"
