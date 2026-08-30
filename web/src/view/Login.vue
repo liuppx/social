@@ -30,31 +30,6 @@
 					</div>
 					<div v-else class="login-access">
 						<el-button class="wallet-login-button" type="primary" size="large" :loading="walletLoading" @click="walletSignIn">钱包登录</el-button>
-						<el-button class="email-login-toggle" text @click="toggleEmailLogin">
-							邮箱密码登录
-							<el-icon class="email-login-arrow">
-								<ArrowUp v-if="emailLoginVisible" />
-								<ArrowDown v-else />
-							</el-icon>
-						</el-button>
-						<transition name="login-expand">
-							<div v-if="emailLoginVisible" class="email-login-panel">
-								<el-form-item prop="email">
-									<el-input v-model="loginForm.email" autocomplete="email" placeholder="邮箱" size="large">
-										<template #prefix><el-icon><User /></el-icon></template>
-									</el-input>
-								</el-form-item>
-								<el-form-item prop="password">
-									<el-input type="password" v-model="loginForm.password" autocomplete="current-password" placeholder="密码" size="large">
-										<template #prefix><el-icon><Lock /></el-icon></template>
-									</el-input>
-								</el-form-item>
-								<el-form-item class="email-login-actions">
-									<el-button size="large" @click="resetForm('loginForm')">清空</el-button>
-									<el-button type="primary" size="large" @click="submitForm('loginForm')">邮箱登录</el-button>
-								</el-form-item>
-							</div>
-						</transition>
 					</div>
 				</transition>
 			</el-form>
@@ -118,12 +93,12 @@ export default {
 	},
 	computed: {
 		loginTitle() {
-			return this.loginMode === 'passport' ? '通行证登录' : '钱包身份登录'
+			return 'Social'
 		},
 		loginSubtitle() {
 			return this.loginMode === 'passport'
-				? '请使用手机相机或夜莺钱包扫码确认登录。'
-				: '使用钱包身份或已验证邮箱进入社区聊天'
+				? '使用通行证完成身份验证后进入 Social。'
+				: '使用夜莺钱包授权钱包身份，Social 将读取已验证邮箱后进入工作区。'
 		}
 	},
 	methods: {
@@ -216,7 +191,7 @@ export default {
 					return
 				}
 				this.passportStatus = result.status === 'approved' || result.status === 'confirmed'
-					? '已确认，正在登录…' : (result.message || '等待通行证确认')
+					? '已确认，正在登录…' : (result.message || '')
 				this.passportTimer = window.setTimeout(() => this.pollPassportStatus(), 2000)
 			} catch (error) {
 				this.cancelPassportLogin()
@@ -408,8 +383,10 @@ export default {
 			}
 
 			.login-subtitle {
+				width: calc(100% - 80px);
 				margin-top: 12px;
-				padding: 0 24px;
+				margin-right: auto;
+				margin-left: auto;
 				text-align: center;
 				color: #aaaaaa;
 				font-size: 14px;
@@ -571,6 +548,7 @@ export default {
 				}
 
 				.login-subtitle {
+					width: calc(100% - 72px);
 					margin-top: 4px;
 				}
 
