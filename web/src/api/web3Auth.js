@@ -67,7 +67,7 @@ export async function walletLogin(options = {}) {
 			appId: session.appId,
 			audience: session.audience,
 			nonce: session.nonce,
-			scopes: session.scopes || ['identity.basic', 'identity.wallet', 'identity.email'],
+			scopes: session.scopes || ['identity.basic', 'identity.wallet', 'identity.username', 'identity.email'],
 			requestId: session.requestId,
 			account: {
 				chainKey: normalizeChainKey(chainId),

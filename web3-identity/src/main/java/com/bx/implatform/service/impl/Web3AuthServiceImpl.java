@@ -69,7 +69,7 @@ public class Web3AuthServiceImpl implements Web3AuthService {
     private final PasswordEncoder passwordEncoder;
     private final PassportIdentityMapper passportIdentityMapper;
 
-    private static final List<String> COMMUNITY_SCOPES = List.of("identity.basic", "identity.wallet", "identity.email");
+    private static final List<String> COMMUNITY_SCOPES = List.of("identity.basic", "identity.wallet", "identity.username", "identity.email");
 
     @Override
     public SiweNonceVO issueNonce(SiweNonceDTO dto) {

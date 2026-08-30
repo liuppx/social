@@ -179,6 +179,9 @@ public class PassportLoginServiceImpl implements PassportLoginService {
             .eq(WalletIdentity::getWalletIdentityDid, did));
         User user = binding == null ? null : userMapper.selectById(binding.getUserId());
         String walletAddress = string(identity.get("walletAddress")).toLowerCase();
+        if (walletAddress.isEmpty() || !hasMatchingWalletAccountCredential(identity, walletAddress)) {
+            throw new GlobalException("钱包身份账户凭证无效");
+        }
         if (user == null && !walletAddress.isEmpty()) {
             user = userMapper.selectOne(new LambdaQueryWrapper<User>().eq(User::getWalletAddress, walletAddress));
             if (user != null) {
@@ -186,6 +189,7 @@ public class PassportLoginServiceImpl implements PassportLoginService {
             }
         }
         String email = extractVerifiedEmail(identity);
+        String username = extractVerifiedUsername(identity);
         if (user == null && !email.isEmpty()) {
             user = userMapper.selectOne(new LambdaQueryWrapper<User>().eq(User::getEmail, email));
         }
@@ -193,21 +197,22 @@ public class PassportLoginServiceImpl implements PassportLoginService {
             if (email.isEmpty()) {
                 throw new GlobalException("Social 需要已验证邮箱。请先在夜莺钱包插件中完成钱包身份验证和邮箱验证，再重新登录。");
             }
-            user = createIdentityUser(did, walletAddress, email);
+            user = createIdentityUser(did, walletAddress, email, username);
         }
         if (Boolean.TRUE.equals(user.getIsBanned())) {
             throw new GlobalException("该社区账号已被禁用，无法登录");
         }
-        applyIdentityClaims(user, did, walletAddress, email);
+        applyIdentityClaims(user, did, walletAddress, email, username);
         bindIdentity(did, user.getId(), walletAddress);
         return loginTokenService.createToken(user, 0);
     }
 
-    private User createIdentityUser(String did, String walletAddress, String email) {
+    private User createIdentityUser(String did, String walletAddress, String email, String username) {
+        String accountName = uniqueUserName(username.isEmpty() ? email.substring(0, email.indexOf('@')) : username, null);
         User user = new User();
         user.setEmail(email);
-        user.setUserName(generateUniqueUserName(email));
-        user.setNickName(email.substring(0, email.indexOf('@')));
+        user.setUserName(accountName);
+        user.setNickName(username.isEmpty() ? email.substring(0, email.indexOf('@')) : username);
         user.setPassword(passwordEncoder.encode(randomBase64Url(32)));
         user.setDid(did);
         user.setWalletAddress(walletAddress);
@@ -217,7 +222,7 @@ public class PassportLoginServiceImpl implements PassportLoginService {
         return user;
     }
 
-    private void applyIdentityClaims(User user, String did, String walletAddress, String email) {
+    private void applyIdentityClaims(User user, String did, String walletAddress, String email, String username) {
         User update = new User();
         update.setId(user.getId());
         boolean changed = false;
@@ -234,6 +239,17 @@ public class PassportLoginServiceImpl implements PassportLoginService {
             User existing = userMapper.selectOne(new LambdaQueryWrapper<User>().eq(User::getEmail, email));
             if (existing == null || existing.getId().equals(user.getId())) {
                 update.setEmail(email);
+                changed = true;
+            }
+        }
+        if (!username.isEmpty()) {
+            String accountName = uniqueUserName(username, user.getId());
+            if (!accountName.equals(string(user.getUserName()))) {
+                update.setUserName(accountName);
+                changed = true;
+            }
+            if (!username.equals(string(user.getNickName()))) {
+                update.setNickName(username);
                 changed = true;
             }
         }
@@ -275,6 +291,26 @@ public class PassportLoginServiceImpl implements PassportLoginService {
         return "";
     }
 
+    @SuppressWarnings("unchecked")
+    private String extractVerifiedUsername(Map<String, Object> identity) {
+        Object credentials = identity.get("credentials");
+        if (!(credentials instanceof List<?> list)) {
+            return "";
+        }
+        for (Object item : list) {
+            Map<String, Object> credential = item instanceof Map ? (Map<String, Object>) item : new HashMap<>();
+            if (!"UsernameCredential".equals(string(credential.get("type")))) {
+                continue;
+            }
+            String token = string(credential.get("credential"));
+            String username = usernameFromCredential(token);
+            if (!username.isEmpty()) {
+                return username;
+            }
+        }
+        return "";
+    }
+
     private String emailFromCredential(String token) {
         String[] parts = token.split("\\.");
         if (parts.length != 3) {
@@ -289,6 +325,42 @@ public class PassportLoginServiceImpl implements PassportLoginService {
         } catch (Exception exception) {
             return "";
         }
+    }
+
+    private String usernameFromCredential(String token) {
+        String[] parts = token.split("\\.");
+        if (parts.length != 3) {
+            return "";
+        }
+        try {
+            String payload = new String(Base64.getUrlDecoder().decode(parts[1]), StandardCharsets.UTF_8);
+            JSONObject object = JSON.parseObject(payload);
+            JSONObject subject = object.getJSONObject("vc").getJSONObject("credentialSubject");
+            return string(subject.get("username"));
+        } catch (Exception exception) {
+            return "";
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private boolean hasMatchingWalletAccountCredential(Map<String, Object> identity, String walletAddress) {
+        Object credentials = identity.get("credentials");
+        if (!(credentials instanceof List<?> list)) return false;
+        for (Object item : list) {
+            Map<String, Object> credential = item instanceof Map ? (Map<String, Object>) item : new HashMap<>();
+            if (!"WalletAccountCredential".equals(string(credential.get("type")))) continue;
+            String token = string(credential.get("credential"));
+            String[] parts = token.split("\\.");
+            if (parts.length != 3) continue;
+            try {
+                JSONObject payload = JSON.parseObject(new String(Base64.getUrlDecoder().decode(parts[1]), StandardCharsets.UTF_8));
+                JSONObject subject = payload.getJSONObject("vc").getJSONObject("credentialSubject");
+                String address = string(subject.get("address"));
+                String chainKey = string(subject.get("chainKey"));
+                if (!address.isEmpty() && !chainKey.isEmpty() && address.equalsIgnoreCase(walletAddress)) return true;
+            } catch (Exception ignored) { }
+        }
+        return false;
     }
 
     private Map<String, Object> nodeRequest(HttpMethod method, String path, Map<String, Object> body) {
@@ -373,18 +445,21 @@ public class PassportLoginServiceImpl implements PassportLoginService {
         return "";
     }
 
-    private String generateUniqueUserName(String email) {
-        String prefix = email.substring(0, email.indexOf('@')).replaceAll("[^a-zA-Z0-9_]", "_");
+    private String uniqueUserName(String username, Long currentUserId) {
+        String prefix = username.replaceAll("[^a-zA-Z0-9_]", "_");
         if (prefix.isBlank()) {
             prefix = "user";
         }
         prefix = prefix.length() > 14 ? prefix.substring(0, 14) : prefix;
         String candidate = prefix;
         int suffix = 1;
-        while (userMapper.selectOne(new LambdaQueryWrapper<User>().eq(User::getUserName, candidate)) != null) {
+        while (true) {
+            User existing = userMapper.selectOne(new LambdaQueryWrapper<User>().eq(User::getUserName, candidate));
+            if (existing == null || existing.getId().equals(currentUserId)) {
+                return candidate;
+            }
             candidate = prefix + "_" + suffix++;
         }
-        return candidate;
     }
 
     private String sessionKey(String sessionId) { return SESSION_KEY_PREFIX + sessionId; }

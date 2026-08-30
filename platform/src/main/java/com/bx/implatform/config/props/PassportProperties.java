@@ -14,6 +14,6 @@ public class PassportProperties {
     private String nodeBaseUrl = "";
     private String appId = "";
     private String callbackUrl = "";
-    private List<String> scopes = new ArrayList<>(List.of("identity.basic", "identity.email", "identity.wallet"));
+    private List<String> scopes = new ArrayList<>(List.of("identity.basic", "identity.username", "identity.email", "identity.wallet"));
     private int sessionTtlSeconds = 300;
 }

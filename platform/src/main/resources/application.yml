@@ -46,5 +46,5 @@ passport:
   node-base-url:
   app-id:
   callback-url:
-  scopes: identity.basic,identity.email,identity.wallet
+  scopes: identity.basic,identity.username,identity.email,identity.wallet
   session-ttl-seconds: 300
