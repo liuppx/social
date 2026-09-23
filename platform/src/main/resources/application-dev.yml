@@ -23,9 +23,9 @@ minio:
 
 identity:
   # Local Node identity service.
-  node-base-url: "${IDENTITY_NODE_BASE_URL:http://127.0.0.1:8100}"
+  node-base-url: "${IDENTITY_NODE_BASE_URL:http://localhost:8100}"
   # Replace with the UUID/appId of the Social application published in Node.
   app-id: "${IDENTITY_APP_ID:social-local}"
   # Local browser login through web devServer proxy.
   # For mobile QR testing, replace 127.0.0.1 with your computer LAN IP.
-  callback-url: "${IDENTITY_CALLBACK_URL:http://127.0.0.1:8082/api/identity/callback}"
+  callback-url: "${IDENTITY_CALLBACK_URL:http://localhost:8082/api/identity/callback}"
