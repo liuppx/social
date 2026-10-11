@@ -11,7 +11,7 @@
 | `scripts/health-check.sh` | 检查服务进程、HTTP readiness 和依赖检查状态。 |
 | `scripts/test.sh` | 执行单元测试或基于健康检查的 smoke 测试。 |
 | `scripts/config_backup.sh` | 将当前版本的 `config/` 目录和 Nginx 配置加密备份到 `/opt/backup`。 |
-| `scripts/copy-for-upgrade.sh` | 升级时将当前版本的 `config/` 目录复制到目标版本目录并替换目标配置。 |
+| `scripts/upgrade.sh` | 通过 `copy-config` 阶段将当前版本的 `config/` 目录复制到目标版本目录，并执行其他升级钩子。 |
 | `scripts/backup.conf.template` | `config_backup.sh` 的备份开关、文件名前缀和后缀配置模板。 |
 | `scripts/.passphrase-file.template` | `config_backup.sh` 使用的 GPG 对称加密口令文件模板。 |
 
@@ -173,14 +173,14 @@
 - `255`：目标备份文件已存在。
 - 非 `0`：配置缺失、口令文件缺失、源文件缺失或备份失败。
 
-## `copy-for-upgrade.sh`
+## `upgrade.sh` 的 `copy-config` 阶段
 
 用于升级流程中复制配置目录。脚本会将当前模块目录下与 `scripts/` 同级的 `config/` 目录复制到目标版本目录下，并替换目标版本目录中的 `config/`。
 
 ### 用法
 
 ```bash
-./scripts/copy-for-upgrade.sh <target-directory-full-path>
+bash scripts/upgrade.sh copy-config <current-dir> <target-directory-full-path>
 ```
 
 ### 参数
