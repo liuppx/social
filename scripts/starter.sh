@@ -10,6 +10,8 @@ PID_DIR="${ROOT_DIR}/pids"
 
 JAVA_BIN="${JAVA_BIN:-java}"
 JAVA_OPTS="${JAVA_OPTS:-}"
+STOP_TIMEOUT_SECONDS="${STOP_TIMEOUT_SECONDS:-30}"
+FORCE_STOP_TIMEOUT_SECONDS="${FORCE_STOP_TIMEOUT_SECONDS:-5}"
 RUNTIME_ENV="${ROOT_DIR}/config/runtime.env"
 
 ACTION="${1:-start}"
@@ -58,7 +60,15 @@ is_running() {
   if [[ -z "${pid}" ]]; then
     return 1
   fi
-  kill -0 "${pid}" 2>/dev/null
+  kill -0 "${pid}" 2>/dev/null || return 1
+  local state
+  state="$(ps -p "${pid}" -o stat= 2>/dev/null | tr -d '[:space:]')"
+  [[ -n "${state}" && "${state:0:1}" != "Z" ]]
+}
+
+validate_stop_timeouts() {
+  [[ "${STOP_TIMEOUT_SECONDS}" =~ ^[0-9]+$ ]] || { echo "Invalid STOP_TIMEOUT_SECONDS: ${STOP_TIMEOUT_SECONDS}" >&2; exit 1; }
+  [[ "${FORCE_STOP_TIMEOUT_SECONDS}" =~ ^[0-9]+$ ]] || { echo "Invalid FORCE_STOP_TIMEOUT_SECONDS: ${FORCE_STOP_TIMEOUT_SECONDS}" >&2; exit 1; }
 }
 
 start_service() {
@@ -100,6 +110,7 @@ start_service() {
 }
 
 stop_service() {
+  validate_stop_timeouts
   local name="$1"
   local file
   file="$(pid_file "${name}")"
@@ -123,16 +134,29 @@ stop_service() {
   fi
 
   log "stopping ${name} (pid=${pid}) ..."
-  kill "${pid}" 2>/dev/null || true
-  for _ in {1..20}; do
-    if ! kill -0 "${pid}" 2>/dev/null; then
+  kill -TERM "${pid}" 2>/dev/null || true
+  local waited=0
+  while is_running "${name}"; do
+    if (( waited >= STOP_TIMEOUT_SECONDS )); then
       break
     fi
     sleep 1
+    waited=$((waited + 1))
   done
-  if kill -0 "${pid}" 2>/dev/null; then
+
+  if is_running "${name}"; then
+    log "graceful stop timed out for ${name} after ${STOP_TIMEOUT_SECONDS}s; force killing"
     log "force killing ${name} (pid=${pid})"
-    kill -9 "${pid}" 2>/dev/null || true
+    kill -KILL "${pid}" 2>/dev/null || true
+    waited=0
+    while is_running "${name}"; do
+      if (( waited >= FORCE_STOP_TIMEOUT_SECONDS )); then
+        log "ERROR! ${name} (pid=${pid}) did not exit after SIGKILL"
+        return 1
+      fi
+      sleep 1
+      waited=$((waited + 1))
+    done
   fi
   rm -f "${file}"
   log "${name} stopped"
@@ -155,11 +179,15 @@ start_all() {
 }
 
 stop_all() {
+  local status=0
   for (( idx=${#SERVICES[@]}-1 ; idx>=0 ; idx-- )); do
     local entry="${SERVICES[idx]}"
     local name="${entry%%:*}"
-    stop_service "${name}"
+    if ! stop_service "${name}"; then
+      status=1
+    fi
   done
+  return "${status}"
 }
 
 case "${ACTION}" in
@@ -170,7 +198,9 @@ case "${ACTION}" in
     stop_all
     ;;
   restart)
-    stop_all
+    if ! stop_all; then
+      exit 1
+    fi
     start_all
     ;;
   *)
