@@ -6,7 +6,7 @@ package_common_init social "$@"
 for command_name in mvn npm; do command -v "$command_name" >/dev/null 2>&1 || package_fail "$command_name is required"; done
 (cd "$PACKAGE_ROOT_DIR/web" && npm install --no-audit --no-fund && npm run build)
 (cd "$PACKAGE_ROOT_DIR" && mvn -B -DskipTests clean package)
-package_make_root social
+package_make_root social-service
 mkdir -p "$PACKAGE_DIR/bin" "$PACKAGE_DIR/config"
 for module in platform server rtc web3-identity; do
   jar="$PACKAGE_ROOT_DIR/$module/target/$module.jar"
@@ -27,7 +27,7 @@ cat > "$PACKAGE_DIR/config/runtime.env.template" <<'ENV_TEMPLATE'
 # JAVA_BIN=java
 # JAVA_OPTS=-Xms512m\ -Xmx1024m
 ENV_TEMPLATE
-package_finish_artifact service
+package_finish_artifact service social
 
 package_make_root social-web
 PACKAGE_HEALTH_PATH=/index.html

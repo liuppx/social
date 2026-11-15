@@ -13,13 +13,13 @@ Run the package script from a clean source checkout:
 The script creates an archive under `output/`:
 
 ```text
-output/social-vX.Y.Z-<commit>.tar.gz
+output/social-service-vX.Y.Z-<commit>.tar.gz
 ```
 
 After extracting the archive, the deployment directory contains:
 
 ```text
-social-vX.Y.Z-<commit>/
+social-service-vX.Y.Z-<commit>/
   bin/
     platform.jar
     server.jar
@@ -339,8 +339,8 @@ The frontend variables and reverse proxy rules must agree. For example, if `VUE_
 ./scripts/package.sh
 
 # On the production host.
-tar -xzf social-vX.Y.Z-<commit>.tar.gz
-cd social-vX.Y.Z-<commit>
+tar -xzf social-service-vX.Y.Z-<commit>.tar.gz
+cd social-service-vX.Y.Z-<commit>
 
 # Create runtime env.
 cp config/runtime.env.template config/runtime.env
